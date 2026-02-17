@@ -1,0 +1,113 @@
+/* Navbar Specific Styles */
+
+/* Header Container */
+.custom-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem 2rem;
+    background-color: #fff;
+    width: 100%;
+}
+
+.custom-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+    margin: 0 auto;
+}
+
+/* Left Side: Brand */
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #111;
+}
+
+.brand-icon {
+    color: #3b82f6; /* Bright Blue */
+    width: 24px;
+    height: 24px;
+}
+
+/* Right Side: Actions Container */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* The Grey Pill Group (Board, Calendar, My Board) */
+.nav-group {
+    display: flex;
+    background-color: #f3f4f6; /* Light Grey Background */
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #1f2937;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Individual Grey Buttons (Profile, Logout) */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f3f4f6;
+    text-decoration: none;
+    color: #1f2937;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: #e5e7eb;
+}
+
+/* Icons Generic Style */
+.icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+}
+
+/* Notification Badge */
+.badge-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.notification-badge {
+    background-color: #ef4444; /* Red */
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+}
