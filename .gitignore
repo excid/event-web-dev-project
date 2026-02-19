@@ -151,7 +151,6 @@ logs/
 
 # Web publish folders
 PublishProfiles/
-wwwroot/
 
 # CSS preprocessors
 .sass-cache/
