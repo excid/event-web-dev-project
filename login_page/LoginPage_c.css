@@ -1,0 +1,118 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+    background-color: #f9fafb; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    padding: 20px;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    margin: 15px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.form-helper {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.forgot-link {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.signin-btn {
+    width: 100%;
+    background-color: #0f172a; 
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.footer-signup {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.footer-signup a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.guest-link {
+    display: block;
+    margin-top: 30px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 14px;
+}
