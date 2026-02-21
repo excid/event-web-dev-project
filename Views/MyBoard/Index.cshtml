@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "My Board";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/myboard.css" />
+
+<div class="myboard-container">
+    <div class="myboard-header">
+        <h1 class="myboard-title">My Board</h1>
+        <p class="myboard-subtitle">Manage your posts and track your applications</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav" id="tabNav">
+        <button class="tab-btn active" data-tab="posts">
+            My Posts <span class="tab-count" id="postsCount">2</span>
+        </button>
+        <button class="tab-btn" data-tab="applications">
+            My Applications <span class="tab-count" id="appsCount">2</span>
+        </button>
+        <button class="tab-btn" data-tab="invitations">
+            Invitations <span class="tab-count" id="invitesCount">8</span>
+        </button>
+    </div>
+
+    <div class="tab-divider"></div>
+
+    <!-- Tab Panels -->
+    <div class="tab-panel active" id="tab-posts">
+        @await Html.PartialAsync("~/Views/MyBoard/Components/_MyPostsTab.cshtml")
+    </div>
+
+    <div class="tab-panel" id="tab-applications">
+        @await Html.PartialAsync("~/Views/MyBoard/Components/_MyApplicationsTab.cshtml")
+    </div>
+
+    <div class="tab-panel" id="tab-invitations">
+        @await Html.PartialAsync("~/Views/MyBoard/Components/_InvitationsTab.cshtml")
+    </div>
+</div>
+
+<script src="~/js/myboard.js"></script>

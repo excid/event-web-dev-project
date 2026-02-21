@@ -98,12 +98,6 @@ yarn-error.log*
 package-lock.json
 yarn.lock
 
-# Compiled JavaScript/TypeScript
-*.js.map
-*.ts.map
-dist/
-build/
-
 # Environment variables
 .env
 .env.local
@@ -152,7 +146,3 @@ logs/
 # Web publish folders
 PublishProfiles/
 wwwroot/
-
-# CSS preprocessors
-.sass-cache/
-*.css.map
