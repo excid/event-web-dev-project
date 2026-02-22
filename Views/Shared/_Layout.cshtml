@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
     </head>
 <body>
     <header>
@@ -20,5 +21,6 @@
         </main>
     </div>
 
+    @RenderSection("Scripts", required: false)
     </body>
 </html>

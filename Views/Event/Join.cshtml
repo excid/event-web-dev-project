@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Activity Details";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/activity.css" asp-append-version="true" />
+}
+
+<div id="activity-root" aria-label="Activity details">
+    @* Content is rendered dynamically by activity.js *@
+    <noscript>
+        <p style="padding:2rem; text-align:center; color:#6b7280;">
+            Please enable JavaScript to view this page.
+        </p>
+    </noscript>
+</div>
+
+@section Scripts {
+    <script src="~/js/activity.js" asp-append-version="true"></script>
+}
