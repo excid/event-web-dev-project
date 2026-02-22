@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </head>
 
-<header>
+
+<body>
     <partial name="_NavBar" />
-</header>
+    <div class="page-content">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
+    </body>
 </html>
