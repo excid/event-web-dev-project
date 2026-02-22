@@ -15,10 +15,8 @@ public class ActivityPostController : Controller
     }
 
     // GET /ActivityPost/Index
-    // Shows a specific post (by ?id=) or defaults to the first open post.
     public async Task<IActionResult> Index(int? id)
     {
-        // Only load posts that are NOT soft-deleted
         var allPosts = await _db.ActivityPosts
             .Where(p => !p.IsDeleted)
             .OrderByDescending(p => p.PostedAt)
@@ -40,12 +38,10 @@ public class ActivityPostController : Controller
             .ToListAsync();
 
         ViewBag.AllPosts = allPosts;
-
         return View(selectedPost);
     }
 
     // GET /ActivityPost/Archive
-    // Shows all soft-deleted (closed) posts
     public async Task<IActionResult> Archive()
     {
         var archivedPosts = await _db.ActivityPosts
@@ -56,8 +52,7 @@ public class ActivityPostController : Controller
         return View(archivedPosts);
     }
 
-    // POST /ActivityPost/ClosePost
-    // Sets status to Closed AND soft-deletes the post
+    // POST /ActivityPost/ClosePost  → returns JSON
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ClosePost(int id)
@@ -68,14 +63,12 @@ public class ActivityPostController : Controller
         post.Status = "Closed";
         post.IsDeleted = true;
         post.DeletedAt = DateTime.Now;
-
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Index");
+        return Json(new { success = true });
     }
 
-    // POST /ActivityPost/RestorePost
-    // Recovers a soft-deleted post
+    // POST /ActivityPost/RestorePost  → returns JSON
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RestorePost(int id)
@@ -86,14 +79,12 @@ public class ActivityPostController : Controller
         post.Status = "Open";
         post.IsDeleted = false;
         post.DeletedAt = null;
-
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Archive");
+        return Json(new { success = true });
     }
 
-    // POST /ActivityPost/HardDeletePost
-    // PERMANENTLY deletes a post and all its applications
+    // POST /ActivityPost/HardDeletePost  → returns JSON
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> HardDeletePost(int id)
@@ -108,10 +99,10 @@ public class ActivityPostController : Controller
         _db.ActivityPosts.Remove(post);
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Archive");
+        return Json(new { success = true });
     }
 
-    // POST /ActivityPost/AcceptApplication
+    // POST /ActivityPost/AcceptApplication  → returns JSON
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AcceptApplication(int applicationId, int postId)
@@ -127,10 +118,15 @@ public class ActivityPostController : Controller
 
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Index", new { id = postId });
+        // Return updated counts so JS can update the UI
+        return Json(new {
+            success = true,
+            currentMembers = post?.CurrentMembers ?? 0,
+            maxMembers = post?.MaxMembers ?? 0
+        });
     }
 
-    // POST /ActivityPost/RejectApplication
+    // POST /ActivityPost/RejectApplication  → returns JSON
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RejectApplication(int applicationId, int postId)
@@ -141,7 +137,7 @@ public class ActivityPostController : Controller
         application.Status = "Rejected";
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Index", new { id = postId });
+        return Json(new { success = true });
     }
 
     // POST /ActivityPost/Apply
@@ -151,7 +147,7 @@ public class ActivityPostController : Controller
     {
         var post = await _db.ActivityPosts.FindAsync(postId);
         if (post == null || post.Status == "Closed" || post.IsDeleted)
-            return NotFound();
+            return Json(new { success = false, error = "Post is not available" });
 
         var application = new PostApplication
         {
@@ -165,8 +161,6 @@ public class ActivityPostController : Controller
         _db.PostApplications.Add(application);
         await _db.SaveChangesAsync();
 
-        return RedirectToAction("Index", new { id = postId });
+        return Json(new { success = true, applicationId = application.Id });
     }
-
-    
 }

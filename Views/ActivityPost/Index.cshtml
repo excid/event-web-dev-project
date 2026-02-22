@@ -1,22 +1,22 @@
-@using System.Diagnostics.Eventing.Reader
 @model event_web_dev_project.Models.ActivityPost
-@* Place this file at: Views/ActivityPost/Index.cshtml *@
+@* Views/ActivityPost/Index.cshtml *@
 
 <link rel="stylesheet" href="~/css/activity_post.css" />
 
+@* Single hidden anti-forgery token — JS reads this for all AJAX requests *@
+@Html.AntiForgeryToken()
+
 @if (Model == null)
 {
-    <div style="text-align:center; padding: 60px; color: #6b7280;">
+    <div style="text-align:center; padding:60px; color:#6b7280;">
         <p>No posts available yet.</p>
     </div>
 }
 else
 {
-    <div style="padding: 16px 24px 0;">
+    <div style="padding:16px 24px 0;">
         <a href="javascript:history.back()" class="back-link">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
+            <span data-icon="back"></span>
             Back
         </a>
     </div>
@@ -27,43 +27,36 @@ else
         <div class="event-card">
             <div class="event-card-header">
                 <span class="badge badge-sports">@Model.Category</span>
-                <span class="badge @(Model.Status == "Open" ? "badge-open" : "badge-closed")">@Model.Status</span>
+                <span class="badge @(Model.Status == "Open" ? "badge-open" : "badge-closed")">
+                    @Model.Status
+                </span>
             </div>
 
             <h1 class="event-title">@Model.Title</h1>
 
             <p class="event-posted-by">
-                Posted by <a href="#">@Model.PostedBy</a> &bull; @Model.PostedAt.ToString("MMM d, yyyy")
+                Posted by <a href="#">@Model.PostedBy</a>
+                &bull; @Model.PostedAt.ToString("MMM d, yyyy")
             </p>
 
             <p class="event-section-label">Description</p>
             <p class="event-description">@Model.Description</p>
 
             <div class="event-meta-grid">
-                <!-- Location -->
+
                 <div class="event-meta-item">
-                    <span class="meta-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                        </svg>
-                    </span>
+                    <span class="meta-icon" data-icon="location"></span>
                     <div>
                         <div class="meta-label">Location</div>
                         <div class="meta-value">@Model.Location</div>
                     </div>
                 </div>
 
-                <!-- Members -->
                 <div class="event-meta-item">
-                    <span class="meta-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                        </svg>
-                    </span>
+                    <span class="meta-icon" data-icon="members"></span>
                     <div>
                         <div class="meta-label">Members</div>
-                        <div class="meta-value">
+                        <div class="meta-value" id="member-count">
                             @Model.CurrentMembers / @Model.MaxMembers joined
                             @if (Model.SpotsLeft > 0)
                             {
@@ -77,58 +70,32 @@ else
                     </div>
                 </div>
 
-                <!-- Expires -->
                 <div class="event-meta-item">
-                    <span class="meta-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                        </svg>
-                    </span>
+                    <span class="meta-icon" data-icon="calendar"></span>
                     <div>
                         <div class="meta-label">Expires</div>
                         <div class="meta-value">@Model.ExpiresAt.ToString("MMM d, yyyy h:mm tt")</div>
                     </div>
                 </div>
 
-                <!-- Application Mode -->
                 <div class="event-meta-item">
-                    <span class="meta-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
+                    <span class="meta-icon" data-icon="clock"></span>
                     <div>
                         <div class="meta-label">Application Mode</div>
                         <div class="meta-value">@Model.ApplicationMode</div>
                     </div>
                 </div>
+
             </div>
 
             @if (Model.Status == "Open")
             {
-                <form method="post" asp-action="ClosePost" asp-controller="ActivityPost">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button class="btn-close-post" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                        </svg>
-                        Close Post
-                    </button>
-                </form>
-            }
-            @if (Model.Status == "Closed")
-            {
-                <form method="post" asp-action="Archive" asp-controller="ActivityPost">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button class="btn-archive-post" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Archive Post
-                    </button>
-                </form>
+                <button class="btn-close-post"
+                        data-action="close-post"
+                        data-post-id="@Model.Id">
+                    <span data-icon="close"></span>
+                    Close Post
+                </button>
             }
         </div>
 
@@ -150,34 +117,28 @@ else
                                 <span class="applicant-name">@app.ApplicantName</span>
                                 <span class="badge @GetStatusBadgeClass(app.Status)">@app.Status</span>
                             </div>
-                            <div class="application-time">@app.AppliedAt.ToString("MMM d, h:mm tt")</div>
+                            <div class="application-time">
+                                @app.AppliedAt.ToString("MMM d, h:mm tt")
+                            </div>
                             <p class="application-message">@app.Message</p>
 
                             @if (app.Status == "Pending" && Model.Status == "Open")
                             {
                                 <div class="application-actions">
-                                    <form method="post" asp-action="AcceptApplication" asp-controller="ActivityPost" style="display:inline;">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="applicationId" value="@app.Id" />
-                                        <input type="hidden" name="postId" value="@Model.Id" />
-                                        <button class="btn-accept" type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                            </svg>
-                                            Accept
-                                        </button>
-                                    </form>
-                                    <form method="post" asp-action="RejectApplication" asp-controller="ActivityPost" style="display:inline;">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="applicationId" value="@app.Id" />
-                                        <input type="hidden" name="postId" value="@Model.Id" />
-                                        <button class="btn-reject" type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            Reject
-                                        </button>
-                                    </form>
+                                    <button class="btn-accept"
+                                            data-action="accept"
+                                            data-application-id="@app.Id"
+                                            data-post-id="@Model.Id">
+                                        <span data-icon="check"></span>
+                                        Accept
+                                    </button>
+                                    <button class="btn-reject"
+                                            data-action="reject"
+                                            data-application-id="@app.Id"
+                                            data-post-id="@Model.Id">
+                                        <span data-icon="x"></span>
+                                        Reject
+                                    </button>
                                 </div>
                             }
                         </div>
@@ -188,6 +149,9 @@ else
 
     </div>
 }
+
+<script src="~/js/icons.js"></script>
+<script src="~/js/events.js"></script>
 
 @functions {
     string GetStatusBadgeClass(string status) => status switch

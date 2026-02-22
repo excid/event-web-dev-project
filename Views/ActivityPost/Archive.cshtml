@@ -1,54 +1,66 @@
 @model List<event_web_dev_project.Models.ActivityPost>
-<link rel="stylesheet" href="~/css/activity-post.css" />
+@* Views/ActivityPost/Archive.cshtml *@
+
+<link rel="stylesheet" href="~/css/activity_post.css" />
+
+@* Single anti-forgery token for all AJAX requests on this page *@
+@Html.AntiForgeryToken()
 
 <div style="max-width:900px; margin:0 auto; padding:24px;">
+
     <a href="/ActivityPost/Index" class="back-link">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
-        </svg>
+        <span data-icon="back"></span>
         Back to Board
     </a>
 
-    <h1 style="font-size:1.4rem; font-weight:700; margin:20px 0 4px;">Closed Events Archive</h1>
+    <h1 style="font-size:1.4rem; font-weight:700; margin:20px 0 4px; color:#111827;">
+        Closed Events Archive
+    </h1>
     <p style="color:#6b7280; font-size:0.88rem; margin-bottom:24px;">
-        These events are hidden from the public board. You can restore or permanently delete them here.
+        These events are hidden from the public board. Restore them or delete them permanently.
     </p>
 
     @if (!Model.Any())
     {
-        <p style="color:#9ca3af;">No archived events.</p>
+        <p style="color:#9ca3af;">No archived events yet.</p>
     }
     else
     {
-        @foreach (var post in Model)
-        {
-            <div class="application-card" style="margin-bottom:14px;">
-                <div class="application-card-header">
-                    <span class="applicant-name">@post.Title</span>
-                    <span class="badge badge-rejected">Closed</span>
-                </div>
-                <div class="application-time">
-                    Closed on @post.DeletedAt?.ToString("MMM d, yyyy h:mm tt")
-                    &bull; Posted by @post.PostedBy
-                </div>
+        <div class="application-list">
+            @foreach (var post in Model)
+            {
+                <div class="application-card">
+                    <div class="application-card-header">
+                        <span class="applicant-name">@post.Title</span>
+                        <span class="badge badge-rejected">Closed</span>
+                    </div>
+                    <div class="application-time">
+                        Closed @post.DeletedAt?.ToString("MMM d, yyyy h:mm tt")
+                        &bull; Posted by @post.PostedBy
+                        &bull; @post.Applications.Count application(s)
+                    </div>
 
-                <div class="application-actions" style="margin-top:12px;">
-                    <!-- Restore -->
-                    <form method="post" asp-action="RestorePost" asp-controller="ActivityPost" style="display:inline;">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@post.Id" />
-                        <button class="btn-accept" type="submit">↩ Restore</button>
-                    </form>
-                    <!-- Permanently Delete -->
-                    <form method="post" asp-action="HardDeletePost" asp-controller="ActivityPost"
-                          style="display:inline;"
-                          onsubmit="return confirm('Permanently delete \'@post.Title\'? This cannot be undone.')">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@post.Id" />
-                        <button class="btn-reject" type="submit">🗑 Delete Forever</button>
-                    </form>
+                    <div class="application-actions" style="margin-top:12px;">
+                        <button class="btn-accept"
+                                data-action="restore"
+                                data-post-id="@post.Id">
+                            <span data-icon="restore"></span>
+                            Restore
+                        </button>
+                        <button class="btn-reject"
+                                data-action="hard-delete"
+                                data-post-id="@post.Id"
+                                data-post-title="@post.Title">
+                            <span data-icon="trash"></span>
+                            Delete Forever
+                        </button>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     }
+
 </div>
+
+<script src="~/js/icons.js"></script>
+<script src="~/js/events.js"></script>
