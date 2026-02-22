@@ -21,7 +21,7 @@
             My Applications <span class="tab-count" id="appsCount">@Model.ApplicationsTab.TotalApplications</span>
         </button>
         <button class="tab-btn" data-tab="invitations">
-            Invitations <span class="tab-count" id="invitesCount">8</span>
+            Invitations <span class="tab-count" id="invitesCount">@(Model.InvitationsTab.SentTotalInvitations+Model.InvitationsTab.ReceivedTotalInvitations)</span>
         </button>
     </div>
 
@@ -37,7 +37,7 @@
     </div>
 
     <div class="tab-panel" id="tab-invitations">
-        @await Html.PartialAsync("~/Views/MyBoard/Components/_InvitationsTab.cshtml")
+        @await Html.PartialAsync("~/Views/MyBoard/Components/_InvitationsTab.cshtml", Model.InvitationsTab)
     </div>
 </div>
 

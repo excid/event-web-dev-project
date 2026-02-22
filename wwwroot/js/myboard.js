@@ -66,10 +66,10 @@ function handleInvitation(btn, action) {
     // Append notice
     const notice = document.createElement('div');
     if (action === 'accept') {
-        notice.className = 'invitation-card__notice invitation-card__notice--success';
+        notice.className = 'invitation-card__notice status-badge--accepted';
         notice.textContent = '✓ You accepted this invitation. The organizer will contact you with more details.';
     } else {
-        notice.className = 'invitation-card__notice invitation-card__notice--neutral';
+        notice.className = 'invitation-card__notice status-badge--rejected';
         notice.textContent = 'You declined this invitation.';
     }
     notice.style.animation = 'fadeIn 0.25s ease';

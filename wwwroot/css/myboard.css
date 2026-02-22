@@ -322,17 +322,6 @@ body {
     font-size: 0.84rem;
     font-weight: 500;
 }
-.application-card__notice--success,
-.invitation-card__notice--success {
-    background: #f0fdf4;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
-.invitation-card__notice--neutral {
-    background: #f9fafb;
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border);
-}
 
 /* ── Sub-tab Nav (Invitations) ── */
 .subtab-nav {

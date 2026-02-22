@@ -4,6 +4,6 @@ namespace event_web_dev_project.Models
     {
         public MyPostsTabModel PostsTab { get; set; } = new();
         public MyApplicationsTabModel ApplicationsTab { get; set; } = new();
-        // public MyInvitationsTabModel InvitationsTab { get; set; } = new();
+        public MyInvitationsTabModel InvitationsTab { get; set; } = new();
     }
 }
