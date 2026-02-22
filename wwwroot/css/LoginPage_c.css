@@ -5,12 +5,11 @@
     font-family: 'Inter', -apple-system, sans-serif;
 }
 
-body {
-    background-color: #f9fafb; 
+.login-page-wrapper {
+    min-height: calc(100vh - 60px); /* 60px = your navbar height */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
 }
 
 .container {
