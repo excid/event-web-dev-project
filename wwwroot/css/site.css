@@ -18,7 +18,15 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;  /* ← stacks navbar ON TOP of content, not beside it */
+}
+
+.page-content {
+    flex: 1;  /* ← takes up all remaining height below the navbar */
+    display: flex;
+    flex-direction: column;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
