@@ -6,9 +6,9 @@ namespace event_web_dev_project.Controllers;
 
 public class LoginController : Controller
 {
-    public IActionResult Login()
+    public IActionResult Index()
     {
-        return View("~/Views/LoginPage/LoginPage.cshtml");
+        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
