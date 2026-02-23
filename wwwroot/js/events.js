@@ -271,3 +271,120 @@ style.textContent = `
 document.head.appendChild(style);
 
 document.addEventListener('DOMContentLoaded', () => EventBoard.init());
+
+// ─── Review Modal (added for review feature) ────────────────────────────────
+
+const ReviewModal = (() => {
+    let selectedStars = 0;
+    let currentPostId = null;
+    let currentRevieweeId = null;
+    let currentRevieweeName = null;
+
+    const starLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+    function open(btn) {
+        currentPostId = btn.dataset.postId;
+        currentRevieweeId = btn.dataset.revieweeId ?? '';
+        currentRevieweeName = btn.dataset.revieweeName ?? '';
+        selectedStars = 0;
+
+        document.getElementById('modal-reviewee-name').textContent = currentRevieweeName;
+        document.getElementById('review-comment').value = '';
+        document.getElementById('star-label').textContent = 'Select a rating';
+
+        // Reset stars
+        document.querySelectorAll('.star-pick').forEach(s => s.classList.remove('active'));
+
+        document.getElementById('review-modal').style.display = 'flex';
+    }
+
+    function close() {
+        document.getElementById('review-modal').style.display = 'none';
+        selectedStars = 0;
+    }
+
+    function submit() {
+        if (selectedStars === 0) {
+            // Shake the stars to hint user to pick one
+            const picker = document.getElementById('star-picker');
+            picker.style.animation = 'none';
+            picker.offsetHeight; // reflow
+            picker.style.animation = 'shake 0.3s ease';
+            return;
+        }
+
+        const comment = document.getElementById('review-comment').value.trim();
+        const btn = document.querySelector('[data-action="submit-review"]');
+
+        // For now — mockup only, just show toast and mark as done
+        // TODO: replace with real fetch() call to /Review/Submit when backend is ready
+        close();
+
+        // Find the Rate button for this person and replace with a "done" state
+        const rateBtn = document.querySelector(
+            `[data-action="open-review"][data-reviewee-name="${currentRevieweeName}"]`
+        );
+        if (rateBtn) {
+            rateBtn.outerHTML = `<span class="btn-rate-done">
+                ${'★'.repeat(selectedStars)}${'☆'.repeat(5 - selectedStars)}
+            </span>`;
+        }
+
+        EventBoard.toast(`Review submitted for ${currentRevieweeName}!`);
+    }
+
+    function handleStarClick(star) {
+        selectedStars = parseInt(star.dataset.value);
+        document.querySelectorAll('.star-pick').forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.value) <= selectedStars);
+        });
+        document.getElementById('star-label').textContent = starLabels[selectedStars];
+    }
+
+    return { open, close, submit, handleStarClick };
+})();
+
+// Add shake animation for the star picker
+const reviewStyle = document.createElement('style');
+reviewStyle.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25%       { transform: translateX(-6px); }
+        75%       { transform: translateX(6px); }
+    }
+`;
+document.head.appendChild(reviewStyle);
+
+// Hook into the existing EventBoard click delegation
+// We extend the switch statement by patching the init
+const _originalInit = EventBoard.init;
+document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    switch (btn.dataset.action) {
+        case 'open-review':         ReviewModal.open(btn);         break;
+        case 'close-review-modal':  ReviewModal.close();           break;
+        case 'submit-review':       ReviewModal.submit();          break;
+    }
+    // Star picker clicks
+    if (btn.classList.contains('star-pick')) {
+        ReviewModal.handleStarClick(btn);
+    }
+});
+
+// Star hover effect
+document.addEventListener('mouseover', e => {
+    const star = e.target.closest('.star-pick');
+    if (!star) return;
+    const val = parseInt(star.dataset.value);
+    document.querySelectorAll('.star-pick').forEach(s => {
+        s.style.color = parseInt(s.dataset.value) <= val ? '#f59e0b' : '';
+    });
+});
+
+document.addEventListener('mouseout', e => {
+    if (!e.target.closest('.star-picker')) return;
+    document.querySelectorAll('.star-pick').forEach(s => {
+        s.style.color = '';
+    });
+});

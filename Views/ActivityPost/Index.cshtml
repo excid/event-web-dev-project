@@ -2,8 +2,6 @@
 @* Views/ActivityPost/Index.cshtml *@
 
 <link rel="stylesheet" href="~/css/activity_post.css" />
-
-@* Single hidden anti-forgery token — JS reads this for all AJAX requests *@
 @Html.AntiForgeryToken()
 
 @if (Model == null)
@@ -43,7 +41,6 @@ else
             <p class="event-description">@Model.Description</p>
 
             <div class="event-meta-grid">
-
                 <div class="event-meta-item">
                     <span class="meta-icon" data-icon="location"></span>
                     <div>
@@ -51,7 +48,6 @@ else
                         <div class="meta-value">@Model.Location</div>
                     </div>
                 </div>
-
                 <div class="event-meta-item">
                     <span class="meta-icon" data-icon="members"></span>
                     <div>
@@ -69,7 +65,6 @@ else
                         </div>
                     </div>
                 </div>
-
                 <div class="event-meta-item">
                     <span class="meta-icon" data-icon="calendar"></span>
                     <div>
@@ -77,7 +72,6 @@ else
                         <div class="meta-value">@Model.ExpiresAt.ToString("MMM d, yyyy h:mm tt")</div>
                     </div>
                 </div>
-
                 <div class="event-meta-item">
                     <span class="meta-icon" data-icon="clock"></span>
                     <div>
@@ -85,7 +79,6 @@ else
                         <div class="meta-value">@Model.ApplicationMode</div>
                     </div>
                 </div>
-
             </div>
 
             @if (Model.Status == "Open")
@@ -96,6 +89,37 @@ else
                     <span data-icon="close"></span>
                     Close Post
                 </button>
+            }
+
+            @* ===== Review Section — only visible when post is Closed ===== *@
+            @if (Model.Status == "Closed")
+            {
+                <div class="review-section">
+                    <h3 class="review-section-title">⭐ Leave Reviews</h3>
+                    <p class="review-section-subtitle">Rate Participants</p>
+
+                    <div class="review-list">
+                        @* Loop real accepted applications *@
+                        @foreach (var app in Model.Applications.Where(a => a.Status == "Accepted"))
+                        {
+                            <div class="review-participant-row">
+                                <div>
+                                    <div class="review-participant-name">@app.ApplicantName</div>
+                                    <div class="review-participant-label">Participant</div>
+                                </div>
+                                <button class="btn-rate" data-action="open-review"
+                                        data-reviewee-name="@app.ApplicantName"
+                                        data-post-id="@Model.Id">
+                                    ⭐ Rate
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <p class="review-note">
+                        ℹ️ Reviews help build trust in the community. You can choose to submit your review publicly or anonymously.
+                    </p>
+                </div>
             }
         </div>
 
@@ -147,6 +171,34 @@ else
             }
         </div>
 
+    </div>
+
+    @* ===== Review Modal ===== *@
+    <div id="review-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Rate <span id="modal-reviewee-name"></span></h3>
+                <button class="modal-close-btn" data-action="close-review-modal">&times;</button>
+            </div>
+
+            <div class="star-picker" id="star-picker">
+                <span class="star-pick" data-value="1">★</span>
+                <span class="star-pick" data-value="2">★</span>
+                <span class="star-pick" data-value="3">★</span>
+                <span class="star-pick" data-value="4">★</span>
+                <span class="star-pick" data-value="5">★</span>
+            </div>
+            <p id="star-label" class="star-label-text">Select a rating</p>
+
+            <textarea id="review-comment"
+                      class="review-textarea"
+                      placeholder="Leave a comment (optional)"></textarea>
+
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" data-action="close-review-modal">Cancel</button>
+                <button class="btn-modal-submit" data-action="submit-review">Submit Review</button>
+            </div>
+        </div>
     </div>
 }
 
