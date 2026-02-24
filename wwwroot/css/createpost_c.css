@@ -1,0 +1,194 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+    background-color: #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 25px;
+}
+
+.create-box {
+    background: white;
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(3, 56, 230, 0.1);
+}
+
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #041024;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+input::placeholder {
+    color: #9ca3af; 
+    opacity: 1;      /*for firefox*/
+    font-size: 14px; 
+}
+
+select:invalid, 
+select option[value=""] {
+    color: #9ca3af;
+}
+
+.input-group-sameline {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.input-datetime {
+    flex: 1;
+}
+
+.mode-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.mode-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-card:hover {
+    background-color: #f9fafb;
+}
+
+.mode-card:has(input:checked) {
+    border: 2px solid #111827;
+    background-color: #f8fafc;
+    padding: 15px; 
+}
+
+.mode-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.mode-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #111827;
+}
+
+.mode-desc {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.4;
+    margin-top: 2px;
+}
+
+.button-sameline {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.button-sameline button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.createpost-btn {
+    background-color: #0051ff;
+    color: white;
+    border: none;
+}
+
+.canclepost-btn {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.ender {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+/* คลาสสำหรับช่องที่กรอกข้อมูลไม่ถูกต้องหรือว่างเปล่า */
+.input-error {
+    border: 2px solid #ff4d4d !important; /* เปลี่ยนขอบเป็นสีแดง */
+    outline: none; /* ลบเส้นขอบสีน้ำเงินเริ่มต้นออก */
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+/* เอฟเฟกต์สั่นเบาๆ เมื่อเพิ่มคลาสนี้เข้าไป (ดึงดูดสายตา) */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+
+.input-error {
+    animation: shake 0.2s ease-in-out 0s 2; /* สั่น 2 ครั้ง */
+}
+
+.input-group:has(.input-error) label {
+    color: #480505;
+    font-weight: bold;
+}
