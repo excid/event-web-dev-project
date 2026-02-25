@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;  // ← this was missing!
 using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Models;
 
 namespace event_web_dev_project.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser>  // ← only one class
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -14,7 +15,6 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Seed some sample data so the page isn't empty on first run
         modelBuilder.Entity<ActivityPost>().HasData(
             new ActivityPost
             {

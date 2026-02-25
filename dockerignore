@@ -1,0 +1,10 @@
+# Stops these folders from being copied into the Docker image
+# Makes builds faster and images smaller
+
+bin/
+obj/
+.vs/
+.git/
+*.user
+*.suo
+Migrations/

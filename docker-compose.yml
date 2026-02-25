@@ -1,0 +1,43 @@
+services:
+
+  # ── SQL Server ─────────────────────────────────────────────────────────────
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: eventboard-db
+    environment:
+      SA_PASSWORD: "EventBoard@123"      # ← team agrees on this password
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"             # free developer edition
+    ports:
+      - "1433:1433"                      # exposes SQL Server on localhost:1433
+    volumes:
+      - sqldata:/var/opt/mssql           # data persists even if container restarts
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost",
+             "-U", "sa", "-P", "EventBoard@123", "-Q", "SELECT 1", "-No"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  # ── ASP.NET App ────────────────────────────────────────────────────────────
+  app:
+    build: .                             # builds using the Dockerfile in this folder
+    container_name: eventboard-app
+    ports:
+      - "8080:8080"                      # visit http://localhost:8080 in browser
+    environment:
+      # Override the connection string so app talks to the db container above
+      # "db" is the service name above — Docker resolves it automatically
+      ConnectionStrings__DefaultConnection: >
+        Server=db,1433;
+        Database=EventWebDb;
+        User Id=sa;
+        Password=EventBoard@123;
+        TrustServerCertificate=True;
+        MultipleActiveResultSets=True;
+    depends_on:
+      db:
+        condition: service_healthy       # waits for SQL Server to be ready first
+
+volumes:
+  sqldata:                               # named volume — survives container restarts
