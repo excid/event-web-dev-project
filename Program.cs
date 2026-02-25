@@ -1,7 +1,5 @@
-using event_web_dev_project.Data;
-using Microsoft.EntityFrameworkCore;
-
-
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +10,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+var cultureInfo = new CultureInfo("en-US");
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(cultureInfo),
+    SupportedCultures = new[] { cultureInfo },
+    SupportedUICultures = new[] { cultureInfo }
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

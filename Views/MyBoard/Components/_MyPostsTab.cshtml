@@ -1,0 +1,66 @@
+<!-- _MyPostsTab.cshtml -->
+
+@model event_web_dev_project.Models.MyPostsTabModel
+@using event_web_dev_project.Helpers
+
+<div class="stats-grid stats-grid--5">
+    <div class="stat-card">
+        <div class="stat-label">Total Posts</div>
+        <div class="stat-value stat-value--default">@Model.TotalPosts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Open</div>
+        <div class="stat-value stat-value--green">@Model.OpenPosts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Closed</div>
+        <div class="stat-value stat-value--red">@Model.ClosedPosts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Expired</div>
+        <div class="stat-value stat-value--default">@Model.ExpiredPosts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Applications</div>
+        <div class="stat-value stat-value--blue">@Model.TotalApplications</div>
+    </div>
+</div>
+
+<div class="posts-grid">
+    @foreach (var post in Model.Posts)
+    {
+        <div class="post-card">
+            <div class="post-card__header">
+                <div class="post-card__tags">
+                    <span class="badge badge--@(post.Category?.ToLower() ?? "category")">@post.Category</span>
+                    <span class="badge badge--@(post.Status?.ToLower() ?? "unknown")">@post.Status</span>
+                </div>
+                <span class="post-card__time">@DateTimeHelper.ToTimeAgo(post.PublishDate)</span>
+            </div>
+
+            <h3 class="post-card__title">@post.Title</h3>
+            <p class="post-card__desc">@post.Description</p>
+
+            <div class="post-card__meta">
+                <div class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>@post.Location</span>
+                </div>
+                <div class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>@post.CurrentMember / @post.MaxMember</span>
+                    <span class="spots-left">(<span class="spots-highlight">@(post.MaxMember - post.CurrentMember) spots left</span>)</span>
+                </div>
+                <div class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Expires: @post.ExpirationDate.ToString("M/d/yyyy")</span>
+                </div>
+            </div>
+
+            <div class="post-card__footer">
+                <span class="post-author">by @post.Author</span>
+                <span class="post-apps">@post.NumApplication applications</span>
+            </div>
+        </div>
+    }
+</div>

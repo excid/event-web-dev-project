@@ -1,0 +1,48 @@
+<!-- _MyApplicationsTab.cshtml -->
+@model event_web_dev_project.Models.MyApplicationsTabModel
+
+<div class="stats-grid stats-grid--4">
+    <div class="stat-card">
+        <div class="stat-label">Total Applications</div>
+        <div class="stat-value stat-value--default">@Model.TotalApplications</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value stat-value--amber">@Model.PendingApplications</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Accepted</div>
+        <div class="stat-value stat-value--green">@Model.AcceptedApplications</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Rejected</div>
+        <div class="stat-value stat-value--red">@Model.RejectedApplications</div>
+    </div>
+</div>
+
+<div class="applications-list">
+    @foreach (var application in Model.Applications)
+    {
+    <div class="application-card">
+        <div class="application-card__top">
+            <div>
+                <h3 class="application-card__title">@application.Title</h3>
+                <p class="application-card__date">Applied @application.ApplicationDate.ToString("M/d/yyyy")</p>
+            </div>
+            <div class="status-badge status-badge--@(application.Status?.ToLower())">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>@application.Status</span>
+            </div>
+        </div>
+
+        <div class="application-card__message">
+            <span class="message-label">Your Message:</span>
+            <p>@application.Message</p>
+        </div>
+
+        <div class="application-card__notice status-badge--@(application.Status.ToLower())">
+            @application.StatusMessage
+        </div>
+    </div>
+    }
+</div>
