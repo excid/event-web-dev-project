@@ -1,5 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using event_web_dev_project.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
