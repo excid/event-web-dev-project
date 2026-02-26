@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="createpost_c.css">
+
+<body>
+    <div class="create-box">
+        <h2>Create new activity post<br></h2>
+        <form>
+            <div class="input-group">
+                <label for="act_name">Activity Title</label>
+                <input type="text" id="act_name" placeholder="e.g.,Looking for Football Teammates">
+            </div>
+
+            <div class="input-group">
+                <label for="category">Category</label>
+                <div class="select-wrapper">
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="sports">⚽ Sports</option>
+                        <option value="studying">📚 Studying</option>
+                        <option value="boardgames">🎲 Board Games</option>
+                        <option value="food">🍕 Food & Cafe</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="description">Descripotion</label>
+                <input type="text" id="description" placeholder="Provide details about the activity...">
+            </div>
+
+            <div class="input-group">
+                <label for="location">location</label>
+                <input type="text" id="location" placeholder="00/00 หนองผักกาด บางปลาไหล กรุงไทย 99999">
+            </div>
+
+            <div class="input-group">
+                <label for="participate">Number of Members Needed</label>
+                <input type="number" id="participant" min="1" max="100" value="1">
+            </div>
+
+            <div class="input-group-sameline">
+                <div class="input-datetime">
+                    <label for="end-date">Expiration Date</label>
+                    <input type="date" id="end-date">
+                </div>
+                <div class="input-datetime">
+                    <label for="end-time">Expiration Time</label>
+                    <input type="time" id="end-time">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Application Mode</label>
+                <div class="mode-container">
+                    <label class="mode-card">
+                        <input type="radio" name="join_mode" value="fifo" checked>
+                        <div class="mode-info">
+                            <span class="mode-title">First-Come,First-Served</span>
+                            <span class="mode-desc">Only accept application up to the member limit,Aplications automatically close when full</span>
+                        </div>
+                    </label>
+
+                    <label class="mode-card">
+                        <input type="radio" name="join_mode" value="manual">
+                        <div class="mode-info">
+                            <span class="mode-title">Accept All & Select Lather</span>
+                            <span class="mode-desc">Accept more then needed.You'll manually salect participations from all applicants</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="button-sameline">
+                <button type="submit" class="createpost-btn">Create Post</button>
+                <button type="button" class="canclepost-btn">Cancel</button>
+            </div>
+            
+        </form>
+        <div class = "ender">Applications will automatically close at the time</div>
+    </div>
+    <script src="createpost_j.js"></script>
+</body>

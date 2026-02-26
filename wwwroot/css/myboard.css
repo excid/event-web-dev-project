@@ -582,3 +582,17 @@ body {
     background: #b91c1c;
     box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
 }
+.btn-manage-post {
+    display: block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.btn-manage-post:hover { background: #1e293b; }

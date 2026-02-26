@@ -1,0 +1,57 @@
+@model event_web_dev_project.Models.RegisterViewModel
+@* Views/Login/Register.cshtml *@
+
+<link rel="stylesheet" href="~/css/LoginPage_c.css">
+
+<div class="login-page-wrapper">
+    <div class="container">
+        <h1>Event Board</h1>
+        <h2 style="font-size:18px; color:#6b7280; font-weight:400; margin-bottom:24px;">
+            Create your account
+        </h2>
+
+        <div class="login-card">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="login-error">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <form asp-action="Register" asp-controller="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="input-group">
+                    <label asp-for="DisplayName">Display Name</label>
+                    <input asp-for="DisplayName" type="text" placeholder="What should we call you?" />
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Email">Email address</label>
+                    <input asp-for="Email" type="email" placeholder="Enter your email" />
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" type="password" placeholder="At least 6 characters" />
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="ConfirmPassword">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" placeholder="Repeat your password" />
+                </div>
+
+                <button type="submit" class="signin-btn">Create Account</button>
+
+                <p class="footer-signup">
+                    Already have an account?
+                    <a asp-controller="Login" asp-action="Index">Sign in</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>

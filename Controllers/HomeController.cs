@@ -1,14 +1,31 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Models;
+using event_web_dev_project.Data;
 
 namespace event_web_dev_project.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly AppDbContext _db;
+
+    public HomeController(AppDbContext db)
     {
-        return View();
+        _db = db;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        // Load only open, non-deleted posts
+        // Include applications so we can show applicant counts
+        var posts = await _db.ActivityPosts
+            .Where(p => !p.IsDeleted && p.Status == "Open")
+            .Include(p => p.Applications)
+            .OrderByDescending(p => p.PostedAt)
+            .ToListAsync();
+
+        return View(posts);
     }
 
     public IActionResult Privacy()

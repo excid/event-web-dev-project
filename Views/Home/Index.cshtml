@@ -1,8 +1,146 @@
-@{
-    ViewData["Title"] = "Home Page";
-}
+@model List<event_web_dev_project.Models.ActivityPost>
+@using System.Text.Json
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/decorate_main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/animate.css" asp-append-version="true" />
+    <title>Document</title>
+</head>
+<body>
+    <header class="custom-header">
+    </header>
+    <section class="banner">
+        <h1 class="title">Find Your Teammates </h1>
+        <p class="subtitle">Connecting Talent with Opportunity: Your Gateway to Career Success</p>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="">
+            <button class="search-button">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Search Event 
+            </button>
+        </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        <div class="stat-container">
+            <div class="stat-item">
+                <div class="stat-icon"></div>
+                <div class="stat-text">
+                    @* Real count from DB *@
+                    <span class="stat-number">@Model.Count </span>
+                    <span class="stat-name">Event</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon"></div>
+                <div class="stat-text">
+                    <span class="stat-number">@Model.Sum(p => p.Applications.Count) </span>
+                    <span class="stat-name">Candidates</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon"></div>
+                <div class="stat-text">
+                    <span class="stat-number">@Model.Select(p => p.PostedBy).Distinct().Count() </span>
+                    <span class="stat-name">Owner</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        
+        <aside class="sidebar">
+            <div class="filter-box">
+                <div class="filter-group">
+                    <label>Search by Event Title</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-search icon"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Location</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-location-dot icon"></i>
+                        <select>
+                            <option>Choose city</option>
+                            <option>Bangkok</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Category</label>
+                    <div class="checkbox-list">
+                        @* Real categories from DB *@
+                        @foreach (var category in Model.Select(p => p.Category).Distinct())
+                        {
+                            var count = Model.Count(p => p.Category == category);
+                            <label class="checkbox-item">
+                                <span><input type="checkbox" value="@category"> @category</span>
+                                <span class="badge">@count</span>
+                            </label>
+                        }
+                    </div>
+                    <button class="btn-show-more">Show More</button>
+                </div>
+
+                <div class="filter-group">
+                    <label>Tags</label>
+                    <div class="tags-container">
+                        <span class="tag">engineering</span>
+                        <span class="tag">design</span>
+                        <span class="tag">ui/ux</span>
+                        <span class="tag">marketing</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ad-banner">
+                <h3>WE ARE HIRING</h3>
+                <p>Apply Today!</p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="event-list" id="event-list-container"></div>
+
+            @* Pass real DB data to card.js as a JS variable *@
+            @* card.js reads window.eventData instead of its own mockup array *@
+            <script>
+                window.eventData = @Html.Raw(JsonSerializer.Serialize(Model.Select(p => new {
+                    id          = p.Id,
+                    title       = p.Title,
+                    category    = p.Category,
+                    description = p.Description,
+                    location    = p.Location,
+                    postedBy    = p.PostedBy,
+                    postedAt    = p.PostedAt.ToString("MMM d, yyyy"),
+                    expiresAt   = p.ExpiresAt.ToString("MMM d, yyyy"),
+                    maxMembers  = p.MaxMembers,
+                    currentMembers = p.CurrentMembers,
+                    spotsLeft   = p.SpotsLeft,
+                    status      = p.Status,
+                    applicationsCount = p.Applications.Count
+                })));
+            </script>
+
+            <script src="~/js/card.js" asp-append-version="true"></script>
+
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn next">Next <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </main>
+
+    </div>
+</body>
+</html>

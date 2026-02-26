@@ -1,0 +1,40 @@
+services:
+
+  db:
+    image: postgres:16
+    container_name: eventboard-db
+    environment:
+      POSTGRES_DB: EventWebDb
+      POSTGRES_USER: eventuser
+      POSTGRES_PASSWORD: EventBoard@123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventuser -d EventWebDb"]
+      interval: 10s
+      retries: 10
+      start_period: 20s
+
+  app:
+    build: .
+    container_name: eventboard-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/src
+      - app_obj:/src/obj    # ← named, gets reused
+      - app_bin:/src/bin    # ← named, gets reused
+    environment:
+      ConnectionStrings__DefaultConnection: >
+        Host=db;Port=5432;Database=EventWebDb;
+        Username=eventuser;Password=EventBoard@123;
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  app_obj:    # ← add these two
+  app_bin:
