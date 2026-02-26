@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Data;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
-using event_web_dev_project.Data;
 using Microsoft.AspNetCore.Identity;
 using event_web_dev_project.Models;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
