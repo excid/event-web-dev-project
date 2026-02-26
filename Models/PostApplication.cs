@@ -26,4 +26,6 @@ public class PostApplication
 
     // Navigation property
     public ActivityPost? ActivityPost { get; set; }
+
+    public string? ApplicantId { get; set; }
 }

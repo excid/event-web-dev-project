@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Data;
 using event_web_dev_project.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace event_web_dev_project.Controllers;
 
+[Authorize]
 public class ActivityPostController : Controller
 {
     private readonly AppDbContext _db;
@@ -163,4 +166,52 @@ public class ActivityPostController : Controller
 
         return Json(new { success = true, applicationId = application.Id });
     }
+
+    [Authorize]  // must be logged in
+public IActionResult Create()
+{
+    return View("~/Views/ActivityPost/Create.cshtml");
+}
+
+// POST /ActivityPost/Create  →  saves the new post to DB
+[HttpPost]
+[Authorize]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create([FromBody] CreatePostViewModel model)
+{
+    if (!ModelState.IsValid)
+        return Json(new { success = false, error = "Invalid data" });
+
+    // Get the logged-in user's ID and display name
+    var userId      = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var displayName = User.FindFirstValue(ClaimTypes.Name) ?? "Unknown";
+
+    // Map application mode label
+    var modeLabel = model.Mode == "fifo"
+        ? "First-Come, First-Served"
+        : "Overflow allowed - Owner selects";
+
+    var post = new ActivityPost
+    {
+        Title           = model.Title,
+        Category        = model.Category,
+        Description     = model.Description,
+        Location        = model.Location,
+        MaxMembers      = model.MaxMembers,
+        CurrentMembers  = 0,
+        ExpiresAt       = DateTime.Parse(model.Deadline).ToUniversalTime(),
+        ApplicationMode = modeLabel,
+        Status          = "Open",
+        PostedBy        = displayName,
+        OwnerId         = userId,           // ← links post to logged-in user
+        PostedAt        = DateTime.UtcNow,
+        IsDeleted       = false
+    };
+
+    _db.ActivityPosts.Add(post);
+    await _db.SaveChangesAsync();
+
+    return Json(new { success = true, postId = post.Id });
+}
+
 }

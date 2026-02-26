@@ -1,49 +1,49 @@
 // 1. Selection: ดึง Elements
-const postForm = document.querySelector('form');
-const titleInput = document.getElementById('act_name');
+const postForm       = document.querySelector('form');
+const titleInput     = document.getElementById('act_name');
 const categorySelect = document.getElementById('category');
 const descriptionInput = document.getElementById('description');
-const locationInput = document.getElementById('location');
-const participantInput = document.getElementById('participant'); 
-const dateInput = document.getElementById('end-date');
-const timeInput = document.getElementById('end-time');
-
-const createBtn = document.querySelector('.createpost-btn');
-const cancelBtn = document.querySelector('.canclepost-btn');
+const locationInput  = document.getElementById('location');
+const participantInput = document.getElementById('participant');
+const dateInput      = document.getElementById('end-date');
+const timeInput      = document.getElementById('end-time');
+const createBtn      = document.querySelector('.createpost-btn');
+const cancelBtn      = document.querySelector('.canclepost-btn');
 
 const requiredFields = [
-    titleInput, categorySelect, descriptionInput, 
+    titleInput, categorySelect, descriptionInput,
     locationInput, participantInput, dateInput, timeInput
 ];
 
+// Set minimum date to today
 const setMinDate = () => {
     const now = new Date();
-    const minDateStr = now.toISOString().split('T')[0];
-    dateInput.setAttribute('min', minDateStr); 
+    dateInput.setAttribute('min', now.toISOString().split('T')[0]);
 };
 setMinDate();
 
 function triggerError(inputElement) {
     inputElement.classList.add('input-error');
-    setTimeout(() => {
-        inputElement.classList.remove('input-error');
-    }, 3000); 
+    setTimeout(() => inputElement.classList.remove('input-error'), 3000);
 }
 
 function isPastDateTime(dateStr, timeStr) {
     if (!dateStr || !timeStr) return false;
-    const now = new Date();
-    const selectedDateTime = new Date(`${dateStr}T${timeStr}`);
-    return selectedDateTime < now;
+    return new Date(`${dateStr}T${timeStr}`) < new Date();
 }
 
-createBtn.addEventListener('click', function(e) {
-    e.preventDefault(); 
+// Reads the anti-forgery token — same pattern as events.js
+function getAntiForgeryToken() {
+    return document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+}
 
+createBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+
+    // Validate all fields
     let isFormValid = true;
-
     requiredFields.forEach(input => {
-        if (!input.value || input.value.trim() === "") {
+        if (!input.value || input.value.trim() === '') {
             triggerError(input);
             isFormValid = false;
         }
@@ -51,7 +51,7 @@ createBtn.addEventListener('click', function(e) {
 
     const memberCount = parseInt(participantInput.value);
     if (isNaN(memberCount) || memberCount < 1 || memberCount > 100) {
-        alert("จำนวนสมาชิกต้องอยู่ระหว่าง 1 ถึง 100 คน");
+        alert('จำนวนสมาชิกต้องอยู่ระหว่าง 1 ถึง 100 คน');
         triggerError(participantInput);
         isFormValid = false;
     }
@@ -59,25 +59,56 @@ createBtn.addEventListener('click', function(e) {
     if (!isFormValid) return;
 
     if (isPastDateTime(dateInput.value, timeInput.value)) {
-        alert("ไม่สามารถเลือกเวลาในอดีตได้!");
+        alert('ไม่สามารถเลือกเวลาในอดีตได้!');
         triggerError(dateInput);
         triggerError(timeInput);
         return;
     }
 
     const selectedMode = document.querySelector('input[name="join_mode"]:checked').value;
+
     const eventData = {
-        title: titleInput.value.trim(),
-        category: categorySelect.value,
+        title:       titleInput.value.trim(),
+        category:    categorySelect.value,
         description: descriptionInput.value.trim(),
-        location: locationInput.value.trim(),
-        maxMembers: memberCount,
-        deadline: `${dateInput.value}T${timeInput.value}`,
-        mode: selectedMode,
-        createdAt: new Date().toISOString()
+        location:    locationInput.value.trim(),
+        maxMembers:  memberCount,
+        deadline:    `${dateInput.value}T${timeInput.value}`,
+        mode:        selectedMode
     };
 
-    console.log("Success:", eventData);
-    alert("สร้างโพสต์กิจกรรมสำเร็จ!");
+    // Disable button while submitting
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating...';
+
+    try {
+        const response = await fetch('/ActivityPost/Create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': getAntiForgeryToken()
+            },
+            body: JSON.stringify(eventData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Redirect to the newly created post
+            window.location.href = `/ActivityPost/Index?id=${result.postId}`;
+        } else {
+            alert('เกิดข้อผิดพลาด: ' + (result.error ?? 'Unknown error'));
+            createBtn.disabled = false;
+            createBtn.textContent = 'Create Post';
+        }
+    } catch (err) {
+        alert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create Post';
+    }
 });
 
+// Cancel button — go back
+cancelBtn.addEventListener('click', () => {
+    window.location.href = '/Home/Index';
+});

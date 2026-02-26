@@ -39,6 +39,8 @@ public class ActivityPost
 
     public DateTime PostedAt { get; set; } = DateTime.Now;
 
+    public string? OwnerId { get; set; }
+
     // --- Soft Delete ---
     // When true, this post is hidden from all listings.
     // It stays in the database so you can recover it if needed.
