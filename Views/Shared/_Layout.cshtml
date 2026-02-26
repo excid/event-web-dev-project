@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - EventBoard</title>
     
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
     </head>
 <body>
         <partial name="_NavBar" />
@@ -16,5 +17,6 @@
         </main>
     </div>
 
+    @RenderSection("Scripts", required: false)
     </body>
 </html>
