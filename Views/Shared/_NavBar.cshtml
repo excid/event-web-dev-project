@@ -13,22 +13,27 @@
             Event Board
         </a>
 
-        <div class="nav-actions">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation" aria-expanded="false">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+        </button>
+
+        <div class="nav-actions" id="navActions">
 
             @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <a class="nav-item" asp-controller="ActivityPost" asp-action="Create">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Create Post
-                    </a>
-                }
-            
+            {
+                <a class="nav-item" asp-controller="ActivityPost" asp-action="Create">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create Post
+                </a>
+            }
+
             <div class="nav-group">
 
-            
                 <a class="nav-item" asp-controller="ActivityPost" asp-action="Index">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     Board
@@ -64,13 +69,16 @@
                     </button>
                 </form>
             }
-            else{
-            <a class="nav-btn" asp-controller="Login" asp-action="Index">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                Login
-            </a>
+            else
+            {
+                <a class="nav-btn" asp-controller="Login" asp-action="Index">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Login
+                </a>
             }
 
         </div>
     </nav>
 </header>
+
+<script src="~/js/navbar.js"></script>
