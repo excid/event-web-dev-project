@@ -9,10 +9,7 @@ namespace event_web_dev_project.Models
         public int CurrentMonth { get; set; }
         public DateTime SelectedDate { get; set; }
         
-        // ข้อมูลสำหรับวาดช่องตารางปฏิทินทั้งหมด
         public List<CalendarDayModel> Days { get; set; } = new();
-        
-        // ข้อมูลกิจกรรมทั้งหมดในเดือนที่เลือก (ใช้ส่งไปให้ JavaScript)
         public List<CalendarEventItem> AllEventsThisMonth { get; set; } = new();
     }
 
@@ -25,14 +22,13 @@ namespace event_web_dev_project.Models
 
     public class CalendarEventItem
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public DateTime EventDate { get; set; }
-        public string Category { get; set; } 
-        public string SourceType { get; set; } // "Post" (กิจกรรมที่คุณสร้าง) หรือ "Application" (กิจกรรมที่ไปเข้าร่วม)
-        public string Status { get; set; }
-        public string Author { get; set; }
+        public string? Category { get; set; } 
+        public string? SourceType { get; set; }
+        public string? Status { get; set; }
+        public string? Author { get; set; }
         
-        // แปลง Category เป็นคลาส CSS เพื่อแสดงสีให้ตรงหมวดหมู่
         public string CssColorClass => Category?.ToLower() switch
         {
             "sports" => "cat-sports",
