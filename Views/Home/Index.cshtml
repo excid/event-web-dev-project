@@ -77,7 +77,6 @@
                 <div class="filter-group">
                     <label>Category</label>
                     <div class="checkbox-list">
-                        @* Real categories from DB *@
                         @foreach (var category in Model.Select(p => p.Category).Distinct())
                         {
                             var count = Model.Count(p => p.Category == category);

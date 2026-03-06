@@ -20,6 +20,8 @@ public class ProfileViewModel
 
     public string? Interests { get; set; } // Comma-separated for simplicity
 
+    public List<ActivityPost> post_history { get; set; } = new List<ActivityPost>();
+
     public List<string> TagList => Tags?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
     public List<string> InterestList => Interests?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
 

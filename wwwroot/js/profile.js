@@ -1,9 +1,3 @@
-/**
- * profile.js
- * Handles the view/edit mode toggle and real interactivity for the profile page.
- * Connects frontend state to hidden form fields for database persistence.
- */
-
 (function () {
     'use strict';
 

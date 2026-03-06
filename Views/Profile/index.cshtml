@@ -1,4 +1,4 @@
-@model ProfileViewModel
+@model event_web_dev_project.Models.ProfileViewModel
 @{
     ViewData["Title"] = "Profile";
 }
@@ -170,27 +170,19 @@
             </div>
             <div class="activity-list">
                 @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
-                <div class="activity-item">
-                    <div class="activity-info">
-                        <h4>Looking for Football Teammates - Sunday Match</h4>
-                        <p class="activity-meta"><i class="calendar-icon"></i> Feb 11, 2026 <span class="badge organized">Organized</span></p>
+                @foreach (var post in Model.post_history)
+                {
+                    <div class="activity-card">
+                        <div class="activity-card-header">
+                            <h4>@post.Title</h4>
+                            <span class="category-tag @post.Category.ToLower()">@post.Category</span>
+                        </div>
+                        <div class="activity-card-details">
+                            <p><i class="location-icon"></i> @post.Location</p>
+                            <p>Posted on: @post.PostedAt.ToString("MMM dd, yyyy")</p>
+                        </div>
                     </div>
-                    <span class="category-tag sports">Sports</span>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-info">
-                        <h4>Weekend Brunch Crew</h4>
-                        <p class="activity-meta"><i class="calendar-icon"></i> Feb 7, 2026 <span class="badge organized">Organized</span></p>
-                    </div>
-                    <span class="category-tag dining">Dining</span>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-info">
-                        <h4>Coffee Meetup - New to the Area</h4>
-                        <p class="activity-meta"><i class="calendar-icon"></i> Feb 3, 2026 <span class="badge participated">Participated</span></p>
-                    </div>
-                    <span class="category-tag social">Social</span>
-                </div>
+                }
             </div>
         </section>
 

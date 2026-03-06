@@ -5,7 +5,7 @@ using event_web_dev_project.Models;
 
 namespace event_web_dev_project.Data;
 
-public class AppDbContext : IdentityDbContext<ApplicationUser>  // ← only one class
+public class AppDbContext : IdentityDbContext<ApplicationUser> 
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
