@@ -164,13 +164,15 @@
             </form>
         </div>
 
-        <div class="profile-footer">
-            <label class="toggle-container">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-                <span class="toggle-label"><i class="eye-icon"></i> Show my schedule to other users</span>
-            </label>
-        </div>
+        @* @if (Model.IsOwner) {
+            <div class="profile-footer">
+                <label class="toggle-container">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                    <span class="toggle-label"><i class="eye-icon"></i> Show my schedule to other users</span>
+                </label>
+            </div>
+        } *@
     </section>
 
     <!-- Bottom Content Grid -->
