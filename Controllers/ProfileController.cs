@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using event_web_dev_project.Data;
 using event_web_dev_project.Models;
+using System.Security.Claims;
 
 namespace event_web_dev_project.Controllers;
 
@@ -20,29 +21,71 @@ public class ProfileController : Controller
     }
 
     // GET /Profile/Index
+    // GET /Profile/Index?userId=<id>  — view another user's profile (read-only)
     [Authorize]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? userId)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        ApplicationUser? user;
+        bool isOwner;
+
+        if (string.IsNullOrEmpty(userId) || userId == currentUserId)
         {
-            user = await _context.Users.FirstOrDefaultAsync();
-            if (user == null) return RedirectToAction("Index", "Home");
+            // Viewing own profile
+            user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                user = await _context.Users.FirstOrDefaultAsync();
+                if (user == null) return RedirectToAction("Index", "Home");
+            }
+            isOwner = true;
         }
+        else
+        {
+            // Viewing someone else's profile
+            user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+            isOwner = false;
+        }
+
+        var profileUserId = user.Id;
+
+        var postHistory = await _context.ActivityPosts
+            .Where(p => p.OwnerId == profileUserId && p.Status == "Closed")
+            .OrderByDescending(p => p.PostedAt)
+            .ToListAsync();
+
+        var upcomingActivities = await _context.ActivityPosts
+            .Where(p => p.OwnerId == profileUserId && !p.IsDeleted && p.Status == "Open")
+            .OrderBy(p => p.ExpiresAt)
+            .ToListAsync();
 
         var viewModel = new ProfileViewModel
         {
-            UserId      = user.Id,
+            UserId      = profileUserId,
             DisplayName = user.DisplayName ?? user.UserName ?? "Unknown User",
             Email       = user.Email ?? "",
             About       = user.About,
             AvatarUrl   = user.AvatarUrl,
             Tags        = user.Tags,
             Interests   = user.Interests,
-            post_history = await _context.ActivityPosts
-                .Where(p => p.OwnerId == user.Id && p.Status =="Closed")
-                .OrderByDescending(p => p.PostedAt)
-                .ToListAsync()
+            IsOwner     = isOwner,
+
+            post_history        = postHistory,
+            upcoming_activities = upcomingActivities,
+
+            // Reviews received by this user
+            reviews = await _context.Reviews
+                .Where(r => r.RevieweeId == profileUserId)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync(),
+
+            // Compute stats from already-loaded collections
+            OrganizedCount = postHistory.Count + upcomingActivities.Count,
+
+            JoinedCount = await _context.PostApplications
+                .CountAsync(a => a.ApplicantId == profileUserId && a.Status == "Accepted"),
         };
 
         return View(viewModel);

@@ -303,7 +303,7 @@ const ReviewModal = (() => {
         selectedStars = 0;
     }
 
-    function submit() {
+    async function submit() {
         if (selectedStars === 0) {
             // Shake the stars to hint user to pick one
             const picker = document.getElementById('star-picker');
@@ -316,21 +316,52 @@ const ReviewModal = (() => {
         const comment = document.getElementById('review-comment').value.trim();
         const btn = document.querySelector('[data-action="submit-review"]');
 
-        // For now — mockup only, just show toast and mark as done
-        // TODO: replace with real fetch() call to /Review/Submit when backend is ready
-        close();
-
-        // Find the Rate button for this person and replace with a "done" state
-        const rateBtn = document.querySelector(
-            `[data-action="open-review"][data-reviewee-name="${currentRevieweeName}"]`
-        );
-        if (rateBtn) {
-            rateBtn.outerHTML = `<span class="btn-rate-done">
-                ${'★'.repeat(selectedStars)}${'☆'.repeat(5 - selectedStars)}
-            </span>`;
+        if (!currentRevieweeId) {
+            EventBoard.toast('Cannot submit review: participant has no linked account', 'error');
+            close();
+            return;
         }
 
-        EventBoard.toast(`Review submitted for ${currentRevieweeName}!`);
+        try {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+            const body = new URLSearchParams({
+                postId: currentPostId,
+                revieweeId: currentRevieweeId,
+                revieweeName: currentRevieweeName,
+                rating: selectedStars,
+                comment: comment,
+                isAnonymous: 'false',
+                __RequestVerificationToken: token
+            });
+
+            const res = await fetch('/Review/Submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
+            });
+
+            const data = await res.json();
+
+            close();
+
+            if (data.success) {
+                // Find the Rate button for this person and replace with a "done" state
+                const rateBtn = document.querySelector(
+                    `[data-action="open-review"][data-reviewee-name="${currentRevieweeName}"]`
+                );
+                if (rateBtn) {
+                    rateBtn.outerHTML = `<span class="btn-rate-done">
+                        ${'★'.repeat(selectedStars)}${'☆'.repeat(5 - selectedStars)}
+                    </span>`;
+                }
+                EventBoard.toast(`Review submitted for ${currentRevieweeName}!`);
+            } else {
+                EventBoard.toast(data.error ?? 'Could not submit review', 'error');
+            }
+        } catch {
+            close();
+            EventBoard.toast('Something went wrong submitting the review', 'error');
+        }
     }
 
     function handleStarClick(star) {

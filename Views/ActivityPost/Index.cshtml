@@ -33,7 +33,7 @@ else
             <h1 class="event-title">@Model.Title</h1>
 
             <p class="event-posted-by">
-                Posted by <a href="#">@Model.PostedBy</a>
+                Posted by <a href="@(Model.OwnerId != null ? Url.Action("Index", "Profile", new { userId = Model.OwnerId }) : "#")">@Model.PostedBy</a>
                 &bull; @Model.PostedAt.ToString("MMM d, yyyy")
             </p>
 
@@ -109,6 +109,7 @@ else
                                 </div>
                                 <button class="btn-rate" data-action="open-review"
                                         data-reviewee-name="@app.ApplicantName"
+                                        data-reviewee-id="@app.ApplicantId"
                                         data-post-id="@Model.Id">
                                     ⭐ Rate
                                 </button>
