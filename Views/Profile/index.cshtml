@@ -45,13 +45,46 @@
                         <span><i class="icon-stat"></i> @Model.JoinedCount Joined</span>
                     </div>
                 </div>
-                <button class="edit-profile-btn" id="btn-edit-start">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    Edit Profile
-                </button>
+                @if (Model.IsOwner) {
+                    <button class="edit-profile-btn" id="btn-edit-start">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Edit Profile
+                    </button>
+                }
+                else if (Model.HasReviewedByCurrentUser)
+                {
+                    <button class="edit-profile-btn"
+                            id="btn-open-profile-review"
+                            aria-label="Edit your review for @Model.DisplayName"
+                            data-action="open-profile-review"
+                            data-reviewee-id="@Model.UserId"
+                            data-reviewee-name="@Model.DisplayName"
+                            data-existing-rating="@(Model.ExistingReviewByCurrentUser?.Rating ?? 0)"
+                            data-existing-comment="@(Model.ExistingReviewByCurrentUser?.Comment ?? "")"
+                            data-existing-anonymous="@(Model.ExistingReviewByCurrentUser?.IsAnonymous == true ? "true" : "false")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Edit Review
+                    </button>
+                }
+                else
+                {
+                    <button class="edit-profile-btn"
+                            id="btn-open-profile-review"
+                            aria-label="Write a review for @Model.DisplayName"
+                            data-action="open-profile-review"
+                            data-reviewee-id="@Model.UserId"
+                            data-reviewee-name="@Model.DisplayName">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Write a Review
+                    </button>
+                }
             </div>
 
             <div class="profile-sections">
@@ -80,7 +113,7 @@
             </div>
         </div>
 
-        <!-- EDIT MODE CONTAINER (Hidden by default) -->
+        <!-- EDIT MODE CONTAINER (Hidden by default, only shown to profile owner) -->
         <div class="edit-mode-container" style="display: none;">
             <form asp-action="UpdateProfile" method="post" id="form-edit-profile">
                 <input type="hidden" asp-for="UserId" />
@@ -147,14 +180,6 @@
                 </div>
             </form>
         </div>
-
-        <div class="profile-footer">
-            <label class="toggle-container">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-                <span class="toggle-label"><i class="eye-icon"></i> Show my schedule to other users</span>
-            </label>
-        </div>
     </section>
 
     <!-- Bottom Content Grid -->
@@ -200,27 +225,23 @@
                     <h2>Upcoming Activities</h2>
                 </div>
                 <div class="activity-list">
-                    @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
-                    <div class="activity-card">
-                        <div class="activity-card-header">
-                            <h4>Looking for Football Teammates - Sunday Match</h4>
-                            <span class="category-tag sports">Sports</span>
+                    @if (!Model.upcoming_activities.Any())
+                    {
+                        <p style="color:#9ca3af; font-size:0.88rem;">No upcoming activities.</p>
+                    }
+                    @foreach (var post in Model.upcoming_activities)
+                    {
+                        <div class="activity-card">
+                            <div class="activity-card-header">
+                                <h4>@post.Title</h4>
+                                <span class="category-tag @post.Category.ToLower()">@post.Category</span>
+                            </div>
+                            <div class="activity-card-details">
+                                <p><i class="location-icon"></i> @post.Location</p>
+                                <p>Expires: @post.ExpiresAt.ToString("MMM d, h:mm tt")</p>
+                            </div>
                         </div>
-                        <div class="activity-card-details">
-                            <p><i class="location-icon"></i> Central Park, Field 3</p>
-                            <p>Expires: Feb 15, 12:00 PM</p>
-                        </div>
-                    </div>
-                    <div class="activity-card">
-                        <div class="activity-card-header">
-                            <h4>Coffee Meetup - New to the Area</h4>
-                            <span class="category-tag social">Social</span>
-                        </div>
-                        <div class="activity-card-details">
-                            <p><i class="location-icon"></i> Starlight Cafe, Main Street</p>
-                            <p>Expires: Feb 14, 11:59 PM</p>
-                        </div>
-                    </div>
+                    }
                 </div>
             </section>
 
@@ -233,34 +254,26 @@
                     <h2>Reviews</h2>
                 </div>
                 <div class="review-list">
-                    @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Sarah Chen</span>
-                            <div class="review-stars">★★★★★</div>
+                    @if (!Model.reviews.Any())
+                    {
+                        <p style="color:#9ca3af; font-size:0.88rem;">No reviews yet.</p>
+                    }
+                    @foreach (var review in Model.reviews)
+                    {
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">@review.ReviewerName</span>
+                                <div class="review-stars">
+                                    @(new string('★', review.Rating))@(new string('☆', 5 - review.Rating))
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <p class="review-text">@review.Comment</p>
+                            }
+                            <p class="review-date">@review.CreatedAt.ToString("MMM d, yyyy")</p>
                         </div>
-                        <p class="review-context">Looking for Football Teammates - Sunday Match</p>
-                        <p class="review-text">Great organizer! Very friendly and the event was well-planned.</p>
-                        <p class="review-date">Feb 12, 2026</p>
-                    </div>
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Mike Rodriguez</span>
-                            <div class="review-stars">★★★★☆</div>
-                        </div>
-                        <p class="review-context">Looking for Football Teammates - Sunday Match</p>
-                        <p class="review-text">Had a good time! Would join again.</p>
-                        <p class="review-date">Feb 12, 2026</p>
-                    </div>
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Anonymous User</span>
-                            <div class="review-stars">★★★★★</div>
-                        </div>
-                        <p class="review-context">Weekend Brunch Crew</p>
-                        <p class="review-text">Always punctual and picks amazing places!</p>
-                        <p class="review-date">Feb 8, 2026</p>
-                    </div>
+                    }
                 </div>
             </section>
         </div>
@@ -269,5 +282,216 @@
 
 @section Scripts {
     <script src="~/js/profile.js" asp-append-version="true"></script>
+    @if (!Model.IsOwner)
+    {
+        <script>
+        (function () {
+            var revieweeId    = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.UserId)';
+            var revieweeName  = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.DisplayName)';
+            var isEditMode    = @(Model.HasReviewedByCurrentUser ? "true" : "false");
+            var selectedStars = 0;
+            var starLabels    = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+            /* ── Create modal DOM ─────────────────────────────────────── */
+            var modal = document.createElement('div');
+            modal.id = 'profile-review-modal';
+            modal.className = 'modal-overlay';
+            modal.style.display = 'none';
+            modal.innerHTML = `
+                <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="profile-modal-title"><span id="profile-modal-action">${isEditMode ? 'Edit Review for' : 'Rate'}</span> <span id="profile-modal-reviewee-name"></span></h3>
+                        <button class="modal-close-btn" id="profile-modal-close" aria-label="Close">&times;</button>
+                    </div>
+
+                    <div class="star-picker" id="profile-star-picker">
+                        <span class="star-pick" data-value="1">★</span>
+                        <span class="star-pick" data-value="2">★</span>
+                        <span class="star-pick" data-value="3">★</span>
+                        <span class="star-pick" data-value="4">★</span>
+                        <span class="star-pick" data-value="5">★</span>
+                    </div>
+                    <p id="profile-star-label" class="star-label-text">Select a rating</p>
+
+                    <textarea id="profile-review-comment"
+                              class="review-textarea"
+                              placeholder="Leave a comment (optional)"></textarea>
+
+                    <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:0.88rem;color:#374151;">
+                        <input type="checkbox" id="profile-review-anonymous">
+                        Submit anonymously
+                    </label>
+
+                    <div class="modal-actions">
+                        <button class="btn-modal-cancel" id="profile-modal-cancel">Cancel</button>
+                        <button class="btn-modal-submit" id="profile-modal-submit">${isEditMode ? 'Update Review' : 'Submit Review'}</button>
+                    </div>
+
+                    <p id="profile-review-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>
+                </div>`;
+            // Set the reviewee name via textContent to avoid XSS
+            document.body.appendChild(modal);
+            document.getElementById('profile-modal-reviewee-name').textContent = revieweeName;
+
+            /* ── Open / close helpers ────────────────────────────────── */
+            function openModal() {
+                var openBtn = document.getElementById('btn-open-profile-review');
+                if (isEditMode && openBtn) {
+                    // Pre-fill with existing review data
+                    var existingRating    = parseInt(openBtn.dataset.existingRating) || 0;
+                    var existingComment   = openBtn.dataset.existingComment || '';
+                    var existingAnonymous = openBtn.dataset.existingAnonymous === 'true';
+                    selectedStars = existingRating;
+                    document.getElementById('profile-star-label').textContent = existingRating > 0 ? starLabels[existingRating] : 'Select a rating';
+                    document.getElementById('profile-review-comment').value = existingComment;
+                    document.getElementById('profile-review-anonymous').checked = existingAnonymous;
+                    highlightStars(existingRating);
+                } else {
+                    selectedStars = 0;
+                    document.getElementById('profile-star-label').textContent = 'Select a rating';
+                    document.getElementById('profile-review-comment').value = '';
+                    document.getElementById('profile-review-anonymous').checked = false;
+                    highlightStars(0);
+                }
+                document.getElementById('profile-review-feedback').textContent = '';
+                modal.style.display = 'flex';
+                setTimeout(function () { modal.style.opacity = '1'; }, 10);
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+
+            /* ── Star helpers ────────────────────────────────────────── */
+            function highlightStars(count) {
+                modal.querySelectorAll('.star-pick').forEach(function (s, i) {
+                    s.style.color = i < count ? '#f59e0b' : '#d1d5db';
+                    s.classList.toggle('active', i < count);
+                });
+            }
+
+            function shakeStarPicker() {
+                var picker = document.getElementById('profile-star-picker');
+                picker.style.animation = 'none';
+                picker.offsetHeight; // force reflow
+                picker.style.animation = 'shake 0.3s ease';
+            }
+
+            /* ── Star events ─────────────────────────────────────────── */
+            modal.querySelectorAll('.star-pick').forEach(function (star) {
+                star.addEventListener('mouseover', function () {
+                    highlightStars(parseInt(star.dataset.value));
+                });
+                star.addEventListener('mouseout', function () {
+                    highlightStars(selectedStars);
+                });
+                star.addEventListener('click', function () {
+                    selectedStars = parseInt(star.dataset.value);
+                    highlightStars(selectedStars);
+                    document.getElementById('profile-star-label').textContent = starLabels[selectedStars];
+                });
+            });
+
+            /* ── Submit ──────────────────────────────────────────────── */
+            document.getElementById('profile-modal-submit').addEventListener('click', async function () {
+                if (selectedStars === 0) { shakeStarPicker(); return; }
+
+                var comment   = document.getElementById('profile-review-comment').value.trim();
+                var anonymous = document.getElementById('profile-review-anonymous').checked;
+                var token     = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+                var submitBtn = document.getElementById('profile-modal-submit');
+                var feedback  = document.getElementById('profile-review-feedback');
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting…';
+
+                try {
+                    var endpoint = isEditMode ? '/Review/Update' : '/Review/Submit';
+                    var body = new URLSearchParams({
+                        revieweeId:   revieweeId,
+                        revieweeName: revieweeName,
+                        rating:       selectedStars,
+                        comment:      comment,
+                        isAnonymous:  anonymous,
+                        __RequestVerificationToken: token
+                    });
+
+                    var resp = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: body
+                    });
+                    var result = await resp.json();
+
+                    if (result.success) {
+                        closeModal();
+                        submitBtn.disabled = false;
+                        if (!isEditMode) {
+                            // After a new review, switch to edit mode so the button reflects the new state
+                            isEditMode = true;
+                            var openBtn = document.getElementById('btn-open-profile-review');
+                            if (openBtn) {
+                                openBtn.dataset.existingRating    = selectedStars;
+                                openBtn.dataset.existingComment   = comment;
+                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
+                                openBtn.setAttribute('aria-label', 'Edit your review for ' + revieweeName);
+                                // Update button text node (the text node after the SVG icon)
+                                openBtn.childNodes.forEach(function(n) {
+                                    if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' Edit Review';
+                                });
+                                document.getElementById('profile-modal-action').textContent = 'Edit Review for';
+                                document.getElementById('profile-modal-submit').textContent = 'Update Review';
+                            }
+                        } else {
+                            submitBtn.textContent = 'Update Review';
+                            // Update the stored data for future opens
+                            var openBtn = document.getElementById('btn-open-profile-review');
+                            if (openBtn) {
+                                openBtn.dataset.existingRating    = selectedStars;
+                                openBtn.dataset.existingComment   = comment;
+                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
+                            }
+                        }
+                        showToast(isEditMode);
+                    } else {
+                        feedback.style.color = '#dc2626';
+                        feedback.textContent = result.error ?? 'Something went wrong.';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
+                    }
+                } catch (e) {
+                    feedback.style.color = '#dc2626';
+                    feedback.textContent = 'Network error, please try again.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
+                }
+            });
+
+            /* ── Close listeners ─────────────────────────────────────── */
+            document.getElementById('profile-modal-close').addEventListener('click', closeModal);
+            document.getElementById('profile-modal-cancel').addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+            /* ── Open button ─────────────────────────────────────────── */
+            var openBtn = document.getElementById('btn-open-profile-review');
+            if (openBtn) openBtn.addEventListener('click', openModal);
+
+            /* ── Toast ───────────────────────────────────────────────── */
+            function showToast(isEdit) {
+                var existing = document.getElementById('profile-toast');
+                if (existing) existing.remove();
+                var el = document.createElement('div');
+                el.id = 'profile-toast';
+                el.textContent = (isEdit ? 'Review updated for ' : 'Review submitted for ') + revieweeName + '!';
+                el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+                    'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
+                    'font-size:0.88rem;font-weight:500;z-index:9999;' +
+                    'box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:fadeInUp 0.2s ease;';
+                document.body.appendChild(el);
+                setTimeout(function () { el.remove(); }, 3000);
+            }
+        }());
+        </script>
+    }
 }
 

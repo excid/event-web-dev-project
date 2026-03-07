@@ -11,6 +11,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ActivityPost> ActivityPosts { get; set; }
     public DbSet<PostApplication> PostApplications { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

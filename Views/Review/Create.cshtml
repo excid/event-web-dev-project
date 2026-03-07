@@ -1,0 +1,152 @@
+@{
+    ViewData["Title"] = "Write a Review";
+    var revieweeId   = (string)ViewBag.RevieweeId;
+    var revieweeName = (string)ViewBag.RevieweeName;
+    var avatarUrl    = (string?)ViewBag.RevieweeAvatarUrl;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<div class="profile-container" style="max-width:600px;">
+    <section class="profile-header-card">
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px;">
+            <div class="avatar-placeholder" style="width:64px;height:64px;flex-shrink:0;">
+                @if (!string.IsNullOrEmpty(avatarUrl))
+                {
+                    <img src="@avatarUrl" alt="Avatar of @revieweeName" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                }
+                else
+                {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                }
+            </div>
+            <div>
+                <h1 style="margin:0;font-size:1.4rem;">Write a Review</h1>
+                <p style="margin:4px 0 0;color:#6b7280;">for <strong>@revieweeName</strong></p>
+            </div>
+        </div>
+
+        @Html.AntiForgeryToken()
+
+        <div class="star-picker" id="star-picker" style="margin-bottom:12px;">
+            <span class="star-pick" data-value="1">★</span>
+            <span class="star-pick" data-value="2">★</span>
+            <span class="star-pick" data-value="3">★</span>
+            <span class="star-pick" data-value="4">★</span>
+            <span class="star-pick" data-value="5">★</span>
+        </div>
+        <p id="star-label" class="star-label-text" style="margin-bottom:16px;color:#6b7280;font-size:0.9rem;">Select a rating</p>
+        <input type="hidden" id="selected-rating" value="0">
+
+        <textarea id="review-comment" class="review-textarea"
+                  placeholder="Leave a comment (optional)"
+                  style="width:100%;min-height:100px;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:0.95rem;box-sizing:border-box;"></textarea>
+
+        <label style="display:flex;align-items:center;gap:8px;margin:12px 0;font-size:0.9rem;color:#374151;">
+            <input type="checkbox" id="is-anonymous">
+            Submit anonymously
+        </label>
+
+        <div style="display:flex;gap:12px;margin-top:8px;">
+            <button id="btn-submit-review" class="btn-save" disabled>Submit Review</button>
+            <a href="/Profile/Index?userId=@revieweeId" class="btn-cancel-edit">Cancel</a>
+        </div>
+
+        <p id="review-feedback" style="margin-top:12px;font-size:0.9rem;"></p>
+    </section>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    var revieweeId   = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeId)';
+    var revieweeName = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeName ?? string.Empty)';
+
+    var stars     = document.querySelectorAll('.star-pick');
+    var label     = document.getElementById('star-label');
+    var ratingIn  = document.getElementById('selected-rating');
+    var submitBtn = document.getElementById('btn-submit-review');
+    var feedback  = document.getElementById('review-feedback');
+
+    var labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+    stars.forEach(function (star) {
+        star.addEventListener('mouseover', function () {
+            var val = parseInt(star.dataset.value);
+            highlightStars(val);
+        });
+        star.addEventListener('mouseout', function () {
+            highlightStars(parseInt(ratingIn.value) || 0);
+        });
+        star.addEventListener('click', function () {
+            var val = parseInt(star.dataset.value);
+            ratingIn.value = val;
+            label.textContent = labels[val];
+            highlightStars(val);
+            submitBtn.disabled = false;
+        });
+    });
+
+    function highlightStars(count) {
+        stars.forEach(function (s, i) {
+            s.style.color = i < count ? '#f59e0b' : '#d1d5db';
+        });
+    }
+    highlightStars(0);
+
+    submitBtn.addEventListener('click', async function () {
+        var rating    = parseInt(ratingIn.value);
+        var comment   = document.getElementById('review-comment').value.trim();
+        var anonymous = document.getElementById('is-anonymous').checked;
+        var token     = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+        if (rating < 1 || rating > 5) { feedback.textContent = 'Please select a rating.'; return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting…';
+
+        try {
+            var params = new URLSearchParams({
+                revieweeId:   revieweeId,
+                revieweeName: revieweeName,
+                rating:       rating,
+                comment:      comment,
+                isAnonymous:  anonymous
+            });
+            params.append('__RequestVerificationToken', token);
+
+            var resp = await fetch('/Review/Submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+            var result = await resp.json();
+
+            if (result.success) {
+                feedback.style.color = '#059669';
+                feedback.textContent = '✓ Review submitted successfully!';
+                submitBtn.textContent = 'Submitted';
+                setTimeout(function () {
+                    window.location.href = '/Profile/Index?userId=' + revieweeId;
+                }, 1500);
+            } else {
+                feedback.style.color = '#dc2626';
+                feedback.textContent = result.error ?? 'Something went wrong.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Review';
+            }
+        } catch (e) {
+            feedback.style.color = '#dc2626';
+            feedback.textContent = 'Network error, please try again.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+        }
+    });
+}());
+</script>
+}
