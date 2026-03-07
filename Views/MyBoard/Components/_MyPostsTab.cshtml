@@ -74,13 +74,11 @@ else
                 </div>
 
                 @* Manage Post — links to the ActivityPost detail/management page *@
-                @if @(post.Status != "Closed") {
-                    <a asp-controller="ActivityPost" asp-action="Index"
-                    asp-route-id="@post.PostId"
-                    class="btn-manage-post">
-                        Manage Post →
-                    </a>
-                }
+                <a asp-controller="ActivityPost" asp-action="Index"
+                   asp-route-id="@post.PostId"
+                   class="btn-manage-post">
+                    Manage Post →
+                </a>
             </div>
         }
     </div>
