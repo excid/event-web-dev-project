@@ -37,7 +37,7 @@ body {
 }
 
 .main-padding {
-  padding: 4rem 0 2rem 0;
+  padding: 6rem 0 2rem 0;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
