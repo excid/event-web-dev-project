@@ -20,10 +20,30 @@ public class ReviewController : Controller
         _userManager = userManager;
     }
 
+    // GET /Review/Create?revieweeId=<id>
+    public async Task<IActionResult> Create(string revieweeId)
+    {
+        if (string.IsNullOrEmpty(revieweeId))
+            return BadRequest();
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (revieweeId == currentUserId)
+            return BadRequest("You cannot review yourself.");
+
+        var reviewee = await _userManager.FindByIdAsync(revieweeId);
+        if (reviewee == null)
+            return NotFound();
+
+        ViewBag.RevieweeId   = revieweeId;
+        ViewBag.RevieweeName = reviewee.DisplayName ?? reviewee.UserName ?? "Unknown User";
+        ViewBag.RevieweeAvatarUrl = reviewee.AvatarUrl;
+        return View();
+    }
+
     // POST /Review/Submit
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submit(int postId, string revieweeId, string revieweeName, int rating, string? comment, bool isAnonymous = false)
+    public async Task<IActionResult> Submit(int? postId, string revieweeId, string revieweeName, int rating, string? comment, bool isAnonymous = false)
     {
         if (rating < 1 || rating > 5)
             return Json(new { success = false, error = "Rating must be between 1 and 5" });
@@ -36,26 +56,43 @@ public class ReviewController : Controller
         if (reviewerId == revieweeId)
             return Json(new { success = false, error = "You cannot review yourself" });
 
-        // Check the post exists
-        var post = await _db.ActivityPosts.FindAsync(postId);
-        if (post == null)
-            return Json(new { success = false, error = "Post not found" });
+        // postId = 0 is a sentinel meaning this is a direct profile review (not tied to a specific post)
+        int resolvedPostId = postId ?? 0;
 
-        // Prevent duplicate reviews for the same reviewee on the same post
-        var existing = await _db.Reviews.AnyAsync(r =>
-            r.PostId == postId &&
-            r.ReviewerId == reviewerId &&
-            r.RevieweeId == revieweeId);
+        if (resolvedPostId != 0)
+        {
+            // Check the post exists
+            var post = await _db.ActivityPosts.FindAsync(resolvedPostId);
+            if (post == null)
+                return Json(new { success = false, error = "Post not found" });
 
-        if (existing)
-            return Json(new { success = false, error = "You have already reviewed this person for this post" });
+            // Prevent duplicate reviews for the same reviewee on the same post
+            var existing = await _db.Reviews.AnyAsync(r =>
+                r.PostId == resolvedPostId &&
+                r.ReviewerId == reviewerId &&
+                r.RevieweeId == revieweeId);
+
+            if (existing)
+                return Json(new { success = false, error = "You have already reviewed this person for this post" });
+        }
+        else
+        {
+            // For direct profile reviews (postId = 0), prevent duplicate reviews per reviewer/reviewee pair
+            var existing = await _db.Reviews.AnyAsync(r =>
+                r.PostId == 0 &&
+                r.ReviewerId == reviewerId &&
+                r.RevieweeId == revieweeId);
+
+            if (existing)
+                return Json(new { success = false, error = "You have already reviewed this user" });
+        }
 
         var reviewer = await _userManager.FindByIdAsync(reviewerId);
         var reviewerName = isAnonymous ? "Anonymous User" : (reviewer?.DisplayName ?? reviewer?.UserName ?? "Unknown");
 
         var review = new Review
         {
-            PostId       = postId,
+            PostId       = resolvedPostId,
             ReviewerId   = reviewerId,
             ReviewerName = reviewerName,
             RevieweeId   = revieweeId,
