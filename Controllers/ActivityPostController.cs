@@ -40,7 +40,13 @@ public class ActivityPostController : Controller
             .OrderBy(a => a.AppliedAt)
             .ToListAsync();
 
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userReviews = await _db.Reviews
+            .Where(r => r.PostId == selectedPost.Id && r.ReviewerId == currentUserId)
+            .ToListAsync();
+
         ViewBag.AllPosts = allPosts;
+        ViewBag.UserReviews = userReviews;
         return View(selectedPost);
     }
 

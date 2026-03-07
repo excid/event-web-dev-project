@@ -100,19 +100,38 @@ else
 
                     <div class="review-list">
                         @* Loop real accepted applications *@
+                        @{
+                            var userReviews = ViewBag.UserReviews as List<event_web_dev_project.Models.Review> ?? new List<event_web_dev_project.Models.Review>();
+                        }
                         @foreach (var app in Model.Applications.Where(a => a.Status == "Accepted"))
                         {
+                            var existingReview = userReviews.FirstOrDefault(r => r.RevieweeId == app.ApplicantId);
                             <div class="review-participant-row">
                                 <div>
                                     <div class="review-participant-name">@app.ApplicantName</div>
                                     <div class="review-participant-label">Participant</div>
                                 </div>
-                                <button class="btn-rate" data-action="open-review"
-                                        data-reviewee-name="@app.ApplicantName"
-                                        data-reviewee-id="@app.ApplicantId"
-                                        data-post-id="@Model.Id">
-                                    ⭐ Rate
-                                </button>
+                                @if (existingReview != null)
+                                {
+                                    <button class="btn-rate btn-rate-edit" data-action="open-review"
+                                            data-reviewee-name="@app.ApplicantName"
+                                            data-reviewee-id="@app.ApplicantId"
+                                            data-post-id="@Model.Id"
+                                            data-review-id="@existingReview.Id"
+                                            data-existing-rating="@existingReview.Rating"
+                                            data-existing-comment="@(existingReview.Comment ?? "")">
+                                        ✏️ Edit Review
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn-rate" data-action="open-review"
+                                            data-reviewee-name="@app.ApplicantName"
+                                            data-reviewee-id="@app.ApplicantId"
+                                            data-post-id="@Model.Id">
+                                        ⭐ Rate
+                                    </button>
+                                }
                             </div>
                         }
                     </div>
@@ -178,7 +197,7 @@ else
     <div id="review-modal" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 class="modal-title">Rate <span id="modal-reviewee-name"></span></h3>
+                <h3 class="modal-title" id="modal-title">Rate <span id="modal-reviewee-name"></span></h3>
                 <button class="modal-close-btn" data-action="close-review-modal">&times;</button>
             </div>
 

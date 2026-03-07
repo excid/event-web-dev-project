@@ -106,6 +106,36 @@ public class ReviewController : Controller
         _db.Reviews.Add(review);
         await _db.SaveChangesAsync();
 
+        return Json(new { success = true, reviewId = review.Id });
+    }
+
+    // POST /Review/Update
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(int reviewId, int rating, string? comment, bool isAnonymous = false)
+    {
+        if (rating < 1 || rating > 5)
+            return Json(new { success = false, error = "Rating must be between 1 and 5" });
+
+        var reviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (reviewerId == null)
+            return Json(new { success = false, error = "Not authenticated" });
+
+        var review = await _db.Reviews.FindAsync(reviewId);
+        if (review == null)
+            return Json(new { success = false, error = "Review not found" });
+
+        if (review.ReviewerId != reviewerId)
+            return Json(new { success = false, error = "Unauthorized" });
+
+        var reviewer = await _userManager.FindByIdAsync(reviewerId);
+        review.Rating = rating;
+        review.Comment = comment;
+        review.IsAnonymous = isAnonymous;
+        review.ReviewerName = isAnonymous ? "Anonymous User" : (reviewer?.DisplayName ?? reviewer?.UserName ?? "Unknown");
+
+        await _db.SaveChangesAsync();
+
         return Json(new { success = true });
     }
 }

@@ -279,6 +279,7 @@ const ReviewModal = (() => {
     let currentPostId = null;
     let currentRevieweeId = null;
     let currentRevieweeName = null;
+    let currentReviewId = null;  // non-null means we are editing an existing review
 
     const starLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
@@ -286,14 +287,35 @@ const ReviewModal = (() => {
         currentPostId = btn.dataset.postId;
         currentRevieweeId = btn.dataset.revieweeId ?? '';
         currentRevieweeName = btn.dataset.revieweeName ?? '';
-        selectedStars = 0;
+        currentReviewId = btn.dataset.reviewId ?? null;
 
-        document.getElementById('modal-reviewee-name').textContent = currentRevieweeName;
-        document.getElementById('review-comment').value = '';
-        document.getElementById('star-label').textContent = 'Select a rating';
+        const existingRating = parseInt(btn.dataset.existingRating ?? '0');
+        const existingComment = btn.dataset.existingComment ?? '';
 
-        // Reset stars
-        document.querySelectorAll('.star-pick').forEach(s => s.classList.remove('active'));
+        // Set modal title based on edit vs. new
+        const titleEl = document.getElementById('modal-title');
+        const nameEl = document.getElementById('modal-reviewee-name');
+        nameEl.textContent = currentRevieweeName;
+        if (currentReviewId) {
+            titleEl.firstChild.textContent = 'Edit Review for ';
+        } else {
+            titleEl.firstChild.textContent = 'Rate ';
+        }
+
+        // Pre-fill existing rating/comment when editing
+        if (currentReviewId && existingRating > 0) {
+            selectedStars = existingRating;
+            document.querySelectorAll('.star-pick').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.value) <= selectedStars);
+            });
+            document.getElementById('star-label').textContent = starLabels[selectedStars];
+        } else {
+            selectedStars = 0;
+            document.querySelectorAll('.star-pick').forEach(s => s.classList.remove('active'));
+            document.getElementById('star-label').textContent = 'Select a rating';
+        }
+
+        document.getElementById('review-comment').value = existingComment;
 
         document.getElementById('review-modal').style.display = 'flex';
     }
@@ -324,17 +346,34 @@ const ReviewModal = (() => {
 
         try {
             const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
-            const body = new URLSearchParams({
-                postId: currentPostId,
-                revieweeId: currentRevieweeId,
-                revieweeName: currentRevieweeName,
-                rating: selectedStars,
-                comment: comment,
-                isAnonymous: 'false',
-                __RequestVerificationToken: token
-            });
+            let body;
+            let url;
 
-            const res = await fetch('/Review/Submit', {
+            if (currentReviewId) {
+                // Editing an existing review
+                url = '/Review/Update';
+                body = new URLSearchParams({
+                    reviewId: currentReviewId,
+                    rating: selectedStars,
+                    comment: comment,
+                    isAnonymous: 'false',
+                    __RequestVerificationToken: token
+                });
+            } else {
+                // Creating a new review
+                url = '/Review/Submit';
+                body = new URLSearchParams({
+                    postId: currentPostId,
+                    revieweeId: currentRevieweeId,
+                    revieweeName: currentRevieweeName,
+                    rating: selectedStars,
+                    comment: comment,
+                    isAnonymous: 'false',
+                    __RequestVerificationToken: token
+                });
+            }
+
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body
@@ -345,16 +384,18 @@ const ReviewModal = (() => {
             close();
 
             if (data.success) {
-                // Find the Rate button for this person and replace with a "done" state
+                // Find the Rate/Edit button for this person and update it to reflect the new edit state
                 const rateBtn = document.querySelector(
                     `[data-action="open-review"][data-reviewee-name="${currentRevieweeName}"]`
                 );
                 if (rateBtn) {
-                    rateBtn.outerHTML = `<span class="btn-rate-done">
-                        ${'★'.repeat(selectedStars)}${'☆'.repeat(5 - selectedStars)}
-                    </span>`;
+                    rateBtn.textContent = '✏️ Edit Review';
+                    rateBtn.classList.add('btn-rate-edit');
+                    rateBtn.dataset.reviewId = data.reviewId ?? currentReviewId ?? '';
+                    rateBtn.dataset.existingRating = selectedStars;
+                    rateBtn.dataset.existingComment = comment;
                 }
-                EventBoard.toast(`Review submitted for ${currentRevieweeName}!`);
+                EventBoard.toast(currentReviewId ? `Review updated for ${currentRevieweeName}!` : `Review submitted for ${currentRevieweeName}!`);
             } else {
                 EventBoard.toast(data.error ?? 'Could not submit review', 'error');
             }
