@@ -738,6 +738,30 @@ body {
     gap: 4px;
 }
 
+#edit-interest-list .interest-chip {
+    cursor: pointer;
+}
+
+#display-about {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.interest-chip.sports.active {
+    background: #0369a1;
+    color: #fff;
+}
+
+.interest-chip.dining.active {
+    background: #c2410c;
+    color: #fff;
+}
+
+.interest-chip.social.active {
+    background: #7e22ce;
+    color: #fff;
+}
+
 /* Animations */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
