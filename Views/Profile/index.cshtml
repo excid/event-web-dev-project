@@ -45,7 +45,7 @@
                         <span><i class="icon-stat"></i> @Model.JoinedCount Joined</span>
                     </div>
                 </div>
-                <button class="edit-profile-btn" id="btn-edit-start">
+                <button class="edit-profile-btn" id="btn-edit-start" @(Model.IsOwner ? "" : "style=\"display:none;\"")>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -80,7 +80,7 @@
             </div>
         </div>
 
-        <!-- EDIT MODE CONTAINER (Hidden by default) -->
+        <!-- EDIT MODE CONTAINER (Hidden by default, only shown to profile owner) -->
         <div class="edit-mode-container" style="display: none;">
             <form asp-action="UpdateProfile" method="post" id="form-edit-profile">
                 <input type="hidden" asp-for="UserId" />
@@ -200,27 +200,23 @@
                     <h2>Upcoming Activities</h2>
                 </div>
                 <div class="activity-list">
-                    @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
-                    <div class="activity-card">
-                        <div class="activity-card-header">
-                            <h4>Looking for Football Teammates - Sunday Match</h4>
-                            <span class="category-tag sports">Sports</span>
+                    @if (!Model.upcoming_activities.Any())
+                    {
+                        <p style="color:#9ca3af; font-size:0.88rem;">No upcoming activities.</p>
+                    }
+                    @foreach (var post in Model.upcoming_activities)
+                    {
+                        <div class="activity-card">
+                            <div class="activity-card-header">
+                                <h4>@post.Title</h4>
+                                <span class="category-tag @post.Category.ToLower()">@post.Category</span>
+                            </div>
+                            <div class="activity-card-details">
+                                <p><i class="location-icon"></i> @post.Location</p>
+                                <p>Expires: @post.ExpiresAt.ToString("MMM d, h:mm tt")</p>
+                            </div>
                         </div>
-                        <div class="activity-card-details">
-                            <p><i class="location-icon"></i> Central Park, Field 3</p>
-                            <p>Expires: Feb 15, 12:00 PM</p>
-                        </div>
-                    </div>
-                    <div class="activity-card">
-                        <div class="activity-card-header">
-                            <h4>Coffee Meetup - New to the Area</h4>
-                            <span class="category-tag social">Social</span>
-                        </div>
-                        <div class="activity-card-details">
-                            <p><i class="location-icon"></i> Starlight Cafe, Main Street</p>
-                            <p>Expires: Feb 14, 11:59 PM</p>
-                        </div>
-                    </div>
+                    }
                 </div>
             </section>
 
@@ -233,34 +229,26 @@
                     <h2>Reviews</h2>
                 </div>
                 <div class="review-list">
-                    @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Sarah Chen</span>
-                            <div class="review-stars">★★★★★</div>
+                    @if (!Model.reviews.Any())
+                    {
+                        <p style="color:#9ca3af; font-size:0.88rem;">No reviews yet.</p>
+                    }
+                    @foreach (var review in Model.reviews)
+                    {
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">@review.ReviewerName</span>
+                                <div class="review-stars">
+                                    @(new string('★', review.Rating))@(new string('☆', 5 - review.Rating))
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <p class="review-text">@review.Comment</p>
+                            }
+                            <p class="review-date">@review.CreatedAt.ToString("MMM d, yyyy")</p>
                         </div>
-                        <p class="review-context">Looking for Football Teammates - Sunday Match</p>
-                        <p class="review-text">Great organizer! Very friendly and the event was well-planned.</p>
-                        <p class="review-date">Feb 12, 2026</p>
-                    </div>
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Mike Rodriguez</span>
-                            <div class="review-stars">★★★★☆</div>
-                        </div>
-                        <p class="review-context">Looking for Football Teammates - Sunday Match</p>
-                        <p class="review-text">Had a good time! Would join again.</p>
-                        <p class="review-date">Feb 12, 2026</p>
-                    </div>
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Anonymous User</span>
-                            <div class="review-stars">★★★★★</div>
-                        </div>
-                        <p class="review-context">Weekend Brunch Crew</p>
-                        <p class="review-text">Always punctual and picks amazing places!</p>
-                        <p class="review-date">Feb 8, 2026</p>
-                    </div>
+                    }
                 </div>
             </section>
         </div>

@@ -185,7 +185,8 @@ public class ActivityPostController : Controller
             ApplicantName = applicantName,
             Message       = message,
             Status        = "Pending",
-            AppliedAt     = DateTime.UtcNow
+            AppliedAt     = DateTime.UtcNow,
+            ApplicantId   = User.FindFirstValue(ClaimTypes.NameIdentifier)
         };
 
         _db.PostApplications.Add(application);
