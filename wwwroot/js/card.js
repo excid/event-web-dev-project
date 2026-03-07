@@ -2,7 +2,7 @@
 // Falls back to empty array if somehow not set
 const eventsData = window.eventData || [];
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 4;
 let currentPage = 1;
 
 const container = document.getElementById('event-list-container');
