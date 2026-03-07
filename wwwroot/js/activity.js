@@ -117,7 +117,7 @@
                     </span>
                     <span class="meta-value">
                         ${ACTIVITY.membersJoined} / ${ACTIVITY.membersTotal} joined
-                        <a href="#" class="spots-left">(${spotsLeft} spots left)</a>
+                        <a class="spots-left">(${spotsLeft} spots left)</a>
                     </span>
                 </div>
                 <div class="meta-item">
