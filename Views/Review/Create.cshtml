@@ -118,10 +118,12 @@
                 comment:      comment,
                 isAnonymous:  anonymous
             });
+            params.append('__RequestVerificationToken', token);
 
-            var resp = await fetch('/Review/Submit?' + params.toString(), {
+            var resp = await fetch('/Review/Submit', {
                 method: 'POST',
-                headers: { 'RequestVerificationToken': token }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
             });
             var result = await resp.json();
 
