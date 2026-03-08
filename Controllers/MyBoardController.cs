@@ -27,7 +27,7 @@ public class MyBoardController : Controller
         // ── Tab 1: My Posts ───────────────────────────────────────────────
         // Posts where the logged-in user is the owner
         var myPosts = await _db.ActivityPosts
-            .Where(p => p.OwnerId == userId)
+            .Where(p => p.OwnerId == userId && p.Status != "Closed")
             .Include(p => p.Applications)
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
