@@ -8,15 +8,15 @@
     width: 100%;
     position: fixed;
     z-index:1000;
-    box-sizing: border-box;   /* padding included in width */
-    overflow: hidden;          /* prevent header itself from spilling */
+    box-sizing: border-box;  
+    overflow: hidden;          
 }
 
 .custom-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;               /* was 95% — let it use full header width */
+    width: 100%;              
     max-width: 100%;
     margin: 0 auto;
     gap: 1rem;
@@ -32,7 +32,7 @@
     font-weight: 700;
     font-size: 1.25rem;
     color: #111;
-    flex-shrink: 0;            /* brand never shrinks */
+    flex-shrink: 0;           
 }
 
 .brand-icon {
@@ -46,7 +46,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex-shrink: 1;            /* allow actions to compress if needed */
+    flex-shrink: 1;            
     min-width: 0;
 }
 

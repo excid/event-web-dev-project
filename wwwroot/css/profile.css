@@ -1,5 +1,6 @@
 :root {
-    --primary-blue: #2563eb;
+    
+    --primary-blue: #38a38e;
     --text-main: #1f2937;
     --text-muted: #6b7280;
     --bg-light: #f9fafb;
@@ -7,7 +8,7 @@
     --white: #ffffff;
     --star-gold: #fbbf24;
     --tag-bg: #eff6ff;
-    --tag-text: #3b82f6;
+    --tag-text: #286f36;
 }
 
 * {
@@ -115,7 +116,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 1.2rem;
-    background-color: #111827;
+    background-color: #38a38e;
     color: var(--white);
     border: none;
     border-radius: 6px;
@@ -860,8 +861,6 @@ body {
     background: #7e22ce;
     color: #fff;
 }
-
-
 
 /* Animations */
 @keyframes shake {
