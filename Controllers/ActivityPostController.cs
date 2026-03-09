@@ -74,7 +74,7 @@ public class ActivityPostController : Controller
 
         post.Status = "Closed";
         post.IsDeleted = true;
-        post.DeletedAt = DateTime.UtcNow;
+        post.DeletedAt = DateTime.Now;
         await _db.SaveChangesAsync();
 
         return Json(new { success = true });
@@ -151,7 +151,7 @@ public class ActivityPostController : Controller
                 Title     = "Application Accepted",
                 Message   = $"Your application to join \"{post.Title}\" was accepted!",
                 ActionUrl = "/MyBoard/Index",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             });
         }
 
@@ -190,7 +190,7 @@ public class ActivityPostController : Controller
                 Title     = "Application Declined",
                 Message   = $"Your application to join \"{post.Title}\" was not accepted.",
                 ActionUrl = "/MyBoard/Index",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             });
         }
 
@@ -214,7 +214,7 @@ public class ActivityPostController : Controller
             ApplicantName = applicantName,
             Message       = message,
             Status        = "Pending",
-            AppliedAt     = DateTime.UtcNow,
+            AppliedAt     = DateTime.Now,
             ApplicantId   = User.FindFirstValue(ClaimTypes.NameIdentifier)
         };
 
@@ -230,7 +230,7 @@ public class ActivityPostController : Controller
                 Title     = "New Application",
                 Message   = $"{applicantName} applied to join \"{post.Title}\".",
                 ActionUrl = $"/ActivityPost/Index/{post.Id}",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             });
         }
 
@@ -274,7 +274,7 @@ public class ActivityPostController : Controller
             Status          = "Open",
             PostedBy        = displayName,
             OwnerId         = userId,
-            PostedAt        = DateTime.UtcNow,
+            PostedAt        = DateTime.Now,
             IsDeleted       = false
         };
 

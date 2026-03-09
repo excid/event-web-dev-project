@@ -58,7 +58,7 @@ public class InvitationController : Controller
             ReceiverId = receiverId,
             PostId     = postId,
             Message    = message?.Trim(),
-            SentAt     = DateTime.UtcNow,
+            SentAt     = DateTime.Now,
             Status     = "Pending",
         };
 
@@ -73,7 +73,7 @@ public class InvitationController : Controller
             Title     = "New Invitation",
             Message   = $"{senderName} invited you to join \"{post.Title}\".",
             ActionUrl = "/MyBoard/Index",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         });
 
         await _db.SaveChangesAsync();
@@ -116,7 +116,7 @@ public class InvitationController : Controller
             Title     = notifTitle,
             Message   = notifMessage,
             ActionUrl = "/MyBoard/Index",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         });
 
         await _db.SaveChangesAsync();

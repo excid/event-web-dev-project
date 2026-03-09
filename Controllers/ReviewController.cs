@@ -100,7 +100,7 @@ public class ReviewController : Controller
             Rating       = rating,
             Comment      = comment,
             IsAnonymous  = isAnonymous,
-            CreatedAt    = DateTime.UtcNow
+            CreatedAt    = DateTime.Now
         };
 
         _db.Reviews.Add(review);
@@ -114,7 +114,7 @@ public class ReviewController : Controller
             Title     = "New Review",
             Message   = $"{displayName} left you a {rating}-star review.",
             ActionUrl = "/Profile/Index",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         });
         await _db.SaveChangesAsync();
 
