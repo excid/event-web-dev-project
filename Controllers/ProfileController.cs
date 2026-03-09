@@ -23,6 +23,8 @@ public class ProfileController : Controller
     // GET /Profile/Index
     // GET /Profile/Index?userId=<id>  — view another user's profile (read-only)
     [Authorize]
+    [Route("Profile/{userId?}")]
+    [Route("Profile/Index")]
     public async Task<IActionResult> Index(string? userId)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
