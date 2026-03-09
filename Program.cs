@@ -99,7 +99,6 @@ app.UseRouting();
 app.UseAuthentication();  // ← this was missing from your original file!
 app.UseAuthorization();
 
-app.UseStaticFiles();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
