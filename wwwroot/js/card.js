@@ -148,7 +148,7 @@ document.getElementById('btn-show-more')?.addEventListener('click', function () 
 
     if (isOpen) {
         extra.classList.remove('open');
-        extra.style.display = 'block';  // ยังอยู่ใน DOM แต่ค่อยๆ ซ่อน
+        extra.style.display = 'block';  
         setTimeout(() => {
             if (!extra.classList.contains('open')) extra.style.display = 'none';
         }, 400);
@@ -239,12 +239,10 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 
-// observe sidebar ที่อยู่คงที่
 document.querySelectorAll('.filter-box, .ad-banner').forEach(el => {
     observer.observe(el);
 });
 
-// observe cards — เรียกซ้ำได้หลัง renderCards
 function observeCards() {
     document.querySelectorAll('.event-card:not(.visible)').forEach(el => {
         observer.observe(el);
@@ -255,16 +253,13 @@ observeCards();
 
 
 document.getElementById('btn-clear-filter')?.addEventListener('click', function () {
-    // reset text input
     const textInput = document.querySelector('.filter-box input[type="text"]');
     if (textInput) textInput.value = '';
 
-    // reset selects
     document.getElementById('location-select').value = '';
     document.getElementById('sort-select').value = 'newest';
     document.getElementById('date-select').value = '';
 
-    // reset checkboxes
     document.querySelectorAll('.status-checkbox, .checkbox-item input:not(.status-checkbox)').forEach(cb => {
         cb.checked = false;
     });
