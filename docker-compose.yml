@@ -28,6 +28,7 @@ services:
       - app_bin:/src/bin    # ← named, gets reused
       - app_keys:/src/DataProtection-Keys
     environment:
+      TZ: Asia/Bangkok
       ConnectionStrings__DefaultConnection: >
         Host=db;Port=5432;Database=EventWebDb;
         Username=eventuser;Password=EventBoard@123;

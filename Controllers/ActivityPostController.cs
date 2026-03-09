@@ -268,8 +268,8 @@ public class ActivityPostController : Controller
             Location        = model.Location,
             MaxMembers      = model.MaxMembers,
             CurrentMembers  = 0,
-            ExpiresAt       = DateTime.Parse(model.Deadline).ToUniversalTime(),
-            ActivityDate    = DateTime.Parse(model.ActivityDate).ToUniversalTime(),
+            ExpiresAt       = DateTime.Parse(model.Deadline),  // stored as Bangkok time
+            ActivityDate    = DateTime.Parse(model.ActivityDate),  // stored as Bangkok time
             ApplicationMode = modeLabel,
             Status          = "Open",
             PostedBy        = displayName,
