@@ -106,10 +106,36 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Invitation Accept / Decline ─────────────────────────────────
-function handleInvitation(btn, action) {
+async function handleInvitation(btn, action) {
     const card = btn.closest('.invitation-card');
+    const invitationId = card?.dataset.invitationId;
     const actionsRow = card.querySelector('.invitation-card__actions');
     const statusBadge = card.querySelector('.status-badge');
+
+    // Disable buttons while submitting
+    card.querySelectorAll('button').forEach(b => b.disabled = true);
+
+    try {
+        const token = document.getElementById('invitation-antiforgery-token')?.value ?? '';
+        const body = new URLSearchParams({ invitationId, action });
+        const resp = await fetch('/Invitation/Respond', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': token,
+            },
+            body,
+        });
+        const result = await resp.json();
+
+        if (!result.success) {
+            card.querySelectorAll('button').forEach(b => b.disabled = false);
+            return;
+        }
+    } catch {
+        card.querySelectorAll('button').forEach(b => b.disabled = false);
+        return;
+    }
 
     // Replace action buttons with a notice
     if (actionsRow) actionsRow.remove();

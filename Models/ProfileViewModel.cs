@@ -44,4 +44,10 @@ public class ProfileViewModel
 
     public int OrganizedCount { get; set; }
     public int JoinedCount { get; set; }
+
+    /// <summary>Open posts owned by the current (viewing) user — used to populate the Invite to Event dropdown.</summary>
+    public List<ActivityPost> OwnedOpenPosts { get; set; } = new List<ActivityPost>();
+
+    /// <summary>Post IDs for which the current user has already sent a pending invitation to this profile user.</summary>
+    public HashSet<int> AlreadyInvitedPostIds { get; set; } = new HashSet<int>();
 }

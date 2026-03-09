@@ -54,36 +54,52 @@
                         Edit Profile
                     </button>
                 }
-                else if (Model.HasReviewedByCurrentUser)
-                {
-                    <button class="edit-profile-btn"
-                            id="btn-open-profile-review"
-                            aria-label="Edit your review for @Model.DisplayName"
-                            data-action="open-profile-review"
-                            data-reviewee-id="@Model.UserId"
-                            data-reviewee-name="@Model.DisplayName"
-                            data-existing-rating="@(Model.ExistingReviewByCurrentUser?.Rating ?? 0)"
-                            data-existing-comment="@(Model.ExistingReviewByCurrentUser?.Comment ?? "")"
-                            data-existing-anonymous="@(Model.ExistingReviewByCurrentUser?.IsAnonymous == true ? "true" : "false")">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                        Edit Review
-                    </button>
-                }
                 else
                 {
-                    <button class="edit-profile-btn"
-                            id="btn-open-profile-review"
-                            aria-label="Write a review for @Model.DisplayName"
-                            data-action="open-profile-review"
-                            data-reviewee-id="@Model.UserId"
-                            data-reviewee-name="@Model.DisplayName">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                        </svg>
-                        Write a Review
-                    </button>
+                    <div class="profile-actions">
+                        @if (Model.HasReviewedByCurrentUser)
+                        {
+                            <button class="edit-profile-btn"
+                                    id="btn-open-profile-review"
+                                    aria-label="Edit your review for @Model.DisplayName"
+                                    data-action="open-profile-review"
+                                    data-reviewee-id="@Model.UserId"
+                                    data-reviewee-name="@Model.DisplayName"
+                                    data-existing-rating="@(Model.ExistingReviewByCurrentUser?.Rating ?? 0)"
+                                    data-existing-comment="@(Model.ExistingReviewByCurrentUser?.Comment ?? "")"
+                                    data-existing-anonymous="@(Model.ExistingReviewByCurrentUser?.IsAnonymous == true ? "true" : "false")">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                Edit Review
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="edit-profile-btn"
+                                    id="btn-open-profile-review"
+                                    aria-label="Write a review for @Model.DisplayName"
+                                    data-action="open-profile-review"
+                                    data-reviewee-id="@Model.UserId"
+                                    data-reviewee-name="@Model.DisplayName">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                Write a Review
+                            </button>
+                        }
+                        <button class="edit-profile-btn invite-btn"
+                                id="btn-open-invite"
+                                aria-label="Invite @Model.DisplayName to an event"
+                                data-receiver-id="@Model.UserId"
+                                data-receiver-name="@Model.DisplayName">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            <span class="btn-invite-label">Invite to Event</span>
+                        </button>
+                    </div>
                 }
             </div>
 
@@ -483,6 +499,188 @@
                 var el = document.createElement('div');
                 el.id = 'profile-toast';
                 el.textContent = (isEdit ? 'Review updated for ' : 'Review submitted for ') + revieweeName + '!';
+                el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+                    'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
+                    'font-size:0.88rem;font-weight:500;z-index:9999;' +
+                    'box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:fadeInUp 0.2s ease;';
+                document.body.appendChild(el);
+                setTimeout(function () { el.remove(); }, 3000);
+            }
+        }());
+        </script>
+
+        <script>
+        /* ── Invite to Event Modal ───────────────────────────────────────── */
+        (function () {
+            var receiverId   = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.UserId)';
+            var receiverName = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.DisplayName)';
+            var ownedPosts   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                Model.OwnedOpenPosts.Select(p => new { id = p.Id, title = p.Title })
+            ));
+            var alreadyInvitedPostIds = new Set(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                Model.AlreadyInvitedPostIds
+            )));
+            var INVITED_SUFFIX = ' (Invited)';
+
+            /* Build modal using DOM API to avoid XSS */
+            var inviteModal = document.createElement('div');
+            inviteModal.id = 'invite-modal';
+            inviteModal.className = 'modal-overlay';
+            inviteModal.style.display = 'none';
+
+            inviteModal.innerHTML =
+                '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">' +
+                    '<div class="modal-header">' +
+                        '<h3 class="modal-title" id="invite-modal-title">Invite to Event</h3>' +
+                        '<button class="modal-close-btn" id="invite-modal-close" aria-label="Close">&times;</button>' +
+                    '</div>' +
+                    '<p class="invite-modal-subtitle">Invite <strong id="invite-modal-receiver-name"></strong> to one of your open events.</p>' +
+                    '<div class="invite-form-group">' +
+                        '<label for="invite-post-select" class="invite-label">Select Event</label>' +
+                        '<select id="invite-post-select" class="invite-select"></select>' +
+                    '</div>' +
+                    '<div class="invite-form-group">' +
+                        '<label for="invite-message" class="invite-label">Message <span style="font-weight:400;color:#9ca3af;">(optional)</span></label>' +
+                        '<textarea id="invite-message" class="review-textarea" placeholder="Add a personal message..." rows="3"></textarea>' +
+                    '</div>' +
+                    '<div class="modal-actions">' +
+                        '<button class="btn-modal-cancel" id="invite-modal-cancel">Cancel</button>' +
+                        '<button class="btn-modal-submit" id="invite-modal-submit">Send Invitation</button>' +
+                    '</div>' +
+                    '<p id="invite-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>' +
+                '</div>';
+
+            document.body.appendChild(inviteModal);
+            document.getElementById('invite-modal-receiver-name').textContent = receiverName;
+
+            /* Populate select using DOM API to avoid XSS */
+            var selectEl = document.getElementById('invite-post-select');
+            if (ownedPosts.length === 0) {
+                var opt = document.createElement('option');
+                opt.value = '';
+                opt.disabled = true;
+                opt.textContent = 'No open events available';
+                selectEl.appendChild(opt);
+                document.getElementById('invite-modal-submit').disabled = true;
+            } else {
+                ownedPosts.forEach(function (p) {
+                    var opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = alreadyInvitedPostIds.has(p.id) ? p.title + INVITED_SUFFIX : p.title;
+                    selectEl.appendChild(opt);
+                });
+            }
+
+            /* Update submit button label when the selected event changes */
+            selectEl.addEventListener('change', function () {
+                var submitBtn = document.getElementById('invite-modal-submit');
+                var selectedId = parseInt(selectEl.value, 10);
+                if (!isNaN(selectedId) && selectedId > 0) {
+                    submitBtn.textContent = alreadyInvitedPostIds.has(selectedId) ? 'Invitation Sent' : 'Send Invitation';
+                } else {
+                    submitBtn.textContent = 'Send Invitation';
+                }
+            });
+
+            function openInviteModal() {
+                document.getElementById('invite-message').value = '';
+                document.getElementById('invite-feedback').textContent = '';
+                var submitBtn = document.getElementById('invite-modal-submit');
+                submitBtn.disabled = ownedPosts.length === 0;
+                /* Reflect the already-invited state of the current selection */
+                var selectedId = parseInt(selectEl.value, 10);
+                if (!isNaN(selectedId) && selectedId > 0) {
+                    submitBtn.textContent = alreadyInvitedPostIds.has(selectedId) ? 'Invitation Sent' : 'Send Invitation';
+                } else {
+                    submitBtn.textContent = 'Send Invitation';
+                }
+                inviteModal.style.display = 'flex';
+                setTimeout(function () { inviteModal.style.opacity = '1'; }, 10);
+            }
+
+            function closeInviteModal() {
+                inviteModal.style.display = 'none';
+            }
+
+            document.getElementById('invite-modal-close').addEventListener('click', closeInviteModal);
+            document.getElementById('invite-modal-cancel').addEventListener('click', closeInviteModal);
+            inviteModal.addEventListener('click', function (e) { if (e.target === inviteModal) closeInviteModal(); });
+
+            document.getElementById('invite-modal-submit').addEventListener('click', async function () {
+                var postId = parseInt(selectEl.value, 10);
+                var selectedOption = selectEl.options[selectEl.selectedIndex];
+                var feedback = document.getElementById('invite-feedback');
+                var submitBtn = document.getElementById('invite-modal-submit');
+
+                if (!postId) {
+                    feedback.style.color = '#dc2626';
+                    feedback.textContent = 'Please select an event.';
+                    return;
+                }
+
+                /* Already invited for this event — show toast and close */
+                if (alreadyInvitedPostIds.has(postId)) {
+                    closeInviteModal();
+                    showAlreadySentToast(selectedOption.textContent.replace(INVITED_SUFFIX, ''));
+                    return;
+                }
+
+                var message = document.getElementById('invite-message').value.trim();
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending…';
+
+                try {
+                    var body = new URLSearchParams({
+                        receiverId: receiverId,
+                        postId: postId,
+                        message: message,
+                        __RequestVerificationToken: token,
+                    });
+                    var resp = await fetch('/Invitation/Send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: body,
+                    });
+                    var result = await resp.json();
+                    if (result.success) {
+                        /* Mark this event as invited locally */
+                        alreadyInvitedPostIds.add(postId);
+                        if (selectedOption) selectedOption.textContent += INVITED_SUFFIX;
+                        closeInviteModal();
+                        showInviteToast();
+                    } else {
+                        feedback.style.color = '#dc2626';
+                        feedback.textContent = result.error ?? 'Something went wrong.';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Send Invitation';
+                    }
+                } catch (e) {
+                    feedback.style.color = '#dc2626';
+                    feedback.textContent = 'Network error, please try again.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Invitation';
+                }
+            });
+
+            var openBtn = document.getElementById('btn-open-invite');
+            if (openBtn) openBtn.addEventListener('click', openInviteModal);
+
+            function showInviteToast() {
+                showToast('Invitation sent to ' + receiverName + '!');
+            }
+
+            function showAlreadySentToast(eventTitle) {
+                showToast('Invitation already sent for "' + eventTitle + '"');
+            }
+
+            function showToast(text) {
+                var existing = document.getElementById('invite-toast');
+                if (existing) existing.remove();
+                var el = document.createElement('div');
+                el.id = 'invite-toast';
+                el.textContent = text;
                 el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
                     'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
                     'font-size:0.88rem;font-weight:500;z-index:9999;' +

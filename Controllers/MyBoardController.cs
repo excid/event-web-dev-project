@@ -78,11 +78,44 @@ public class MyBoardController : Controller
         };
 
         // ── Tab 3: Invitations ────────────────────────────────────────────
-        // Not implemented yet — leave empty
+        var sentInvitations = await _db.Invitations
+            .Where(i => i.SenderId == userId)
+            .Include(i => i.Receiver)
+            .Include(i => i.Post)
+            .OrderByDescending(i => i.SentAt)
+            .ToListAsync();
+
+        var receivedInvitations = await _db.Invitations
+            .Where(i => i.ReceiverId == userId)
+            .Include(i => i.Sender)
+            .Include(i => i.Post)
+            .OrderByDescending(i => i.SentAt)
+            .ToListAsync();
+
         var invitationsTab = new MyInvitationsTabModel
         {
-            SentInvitations     = new(),
-            ReceivedInvitations = new()
+            SentInvitations = sentInvitations.Select(i => new SentInvitationCardModel
+            {
+                InvitationId = i.Id,
+                Title        = i.Post?.Title ?? "Unknown Event",
+                Status       = i.Status,
+                Receiver     = i.Receiver?.DisplayName ?? i.Receiver?.UserName ?? "Unknown",
+                SentDate     = i.SentAt,
+                EventDate    = i.Post?.ExpiresAt ?? i.SentAt,
+                Message      = i.Message,
+            }).ToList(),
+
+            ReceivedInvitations = receivedInvitations.Select(i => new ReceivedInvitationCardModel
+            {
+                InvitationId  = i.Id,
+                Title         = i.Post?.Title ?? "Unknown Event",
+                Status        = i.Status,
+                Sender        = i.Sender?.DisplayName ?? i.Sender?.UserName ?? "Unknown",
+                SenderUserId  = i.SenderId,
+                ReceivedDate  = i.SentAt,
+                EventDate     = i.Post?.ExpiresAt ?? i.SentAt,
+                Message       = i.Message,
+            }).ToList(),
         };
 
         var model = new MyBoardViewModel

@@ -128,6 +128,65 @@ body {
     background-color: #1f2937;
 }
 
+.edit-profile-btn:disabled {
+    background-color: #6b7280;
+    cursor: default;
+    opacity: 0.7;
+}
+
+/* Container for stacking action buttons on other user's profile */
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+/* Invite button uses a blue accent */
+.invite-btn {
+    background-color: #2563eb;
+}
+
+.invite-btn:hover {
+    background-color: #1d4ed8;
+}
+
+/* Invite modal form elements */
+.invite-modal-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.invite-form-group {
+    margin-bottom: 14px;
+}
+
+.invite-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.invite-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    background: #fff;
+    cursor: pointer;
+}
+
+.invite-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
 .btn-icon {
     width: 16px;
     height: 16px;
@@ -619,15 +678,21 @@ body {
         min-width: 0;
         white-space: normal;
         text-align: center;
-        order: 999;
         width: 100%;
         justify-content: center;
-        margin-bottom:2rem;
     }
 
     .edit-profile-btn .btn-icon {
         display: none;
     }
+
+    .profile-actions {
+        width: 100%;
+        align-items: stretch;
+        order: 999;
+        margin-bottom: 2rem;
+    }
+
     .profile-main-info {
         flex-wrap: wrap;
     }

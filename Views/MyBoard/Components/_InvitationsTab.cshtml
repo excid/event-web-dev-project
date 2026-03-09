@@ -1,6 +1,8 @@
 @model event_web_dev_project.Models.MyInvitationsTabModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery AntiForgery
 
 <!-- _InvitationsTab.cshtml -->
+<input type="hidden" id="invitation-antiforgery-token" value="@AntiForgery.GetAndStoreTokens(Context).RequestToken" />
 
 <!-- ── Confirmation Modal ── -->
 <div id="confirm-modal" class="confirm-modal-overlay">
@@ -52,19 +54,21 @@
     <div class="invitations-list">
         @foreach (var receivedInvitation in Model.ReceivedInvitations)
         {
-        <div class="invitation-card">
+        <div class="invitation-card" data-invitation-id="@receivedInvitation.InvitationId">
             <div class="invitation-card__top">
                 <div>
                     <h3 class="invitation-card__title">@receivedInvitation.Title</h3>
-                    <p class="invitation-card__meta">From <a href="#" class="user-link">@receivedInvitation.Sender</a> • @receivedInvitation.ReceivedDate</p>
+                    <p class="invitation-card__meta">From <a href="/Profile/Index?userId=@receivedInvitation.SenderUserId" class="user-link">@receivedInvitation.Sender</a> • @receivedInvitation.ReceivedDate.ToString("M/d/yyyy")</p>
                     <p class="invitation-card__event">Event: @receivedInvitation.EventDate.ToString("M/d/yyyy")</p>
                 </div>
-                <div class="status-badge status-badge--@(receivedInvitation.Status.ToLower())">
+                <div class="status-badge status-badge--@(receivedInvitation.Status?.ToLower())">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <span>@receivedInvitation.Status</span>
                 </div>
             </div>
             <div class="invitation-card__msg">@receivedInvitation.Message</div>
+            @if (receivedInvitation.Status == "Pending")
+            {
             <div class="invitation-card__actions">
                 <button class="btn-accept" onclick="showConfirmModal(this, 'accept')">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -75,6 +79,7 @@
                     Decline
                 </button>
             </div>
+            }
         </div>
         }
     </div>
@@ -110,13 +115,13 @@
                     <p class="invitation-card__meta">To <a href="#" class="user-link">@sentInvitation.Receiver</a> • @sentInvitation.SentDate</p>
                     <p class="invitation-card__event">Event: @sentInvitation.EventDate</p>
                 </div>
-                <div class="status-badge status-badge--@(sentInvitation.Status.ToLower())">
+                <div class="status-badge status-badge--@(sentInvitation.Status?.ToLower())">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>@sentInvitation.Status</span>
                 </div>
             </div>
             <div class="invitation-card__msg">@sentInvitation.Message</div>
-            <div class="invitation-card__notice status-badge--@(sentInvitation.Status.ToLower())">
+            <div class="invitation-card__notice status-badge--@(sentInvitation.Status?.ToLower())">
                 @sentInvitation.StatusMessage
             </div>
         </div>
