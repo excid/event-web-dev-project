@@ -95,7 +95,7 @@
 
             const activities = allEvents.filter(e => e.EventDate.startsWith(dateString));
             const container = document.getElementById('activitiesContainer');
-            container.innerHTML = activities.length ? '' : '<p class="empty-msg">No activities scheduled.</p>';
+            container.innerHTML = activities.length ? '' : '<p class="empty-msg">No activities scheduled.</p><br/>';
 
             activities.forEach(ev => {
                 container.innerHTML += `
