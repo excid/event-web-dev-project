@@ -23,7 +23,7 @@ public class HomeController : Controller
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 
-        var locations = await _db.ActivityPosts
+        var locations = await _context.ActivityPosts
         .Where(p => !p.IsDeleted && p.Status == "Open")
         .Select(p => p.Location)
         .Distinct()
@@ -38,7 +38,7 @@ public class HomeController : Controller
     public async Task<IActionResult> Search(string? q, string? categories  ,string? location,
     string? sortBy, string? dateRange, string? statusFilter, bool availableOnly = false)
     {
-        var query = _db.ActivityPosts
+        var query = _context.ActivityPosts
             .Where(p => !p.IsDeleted)
             .AsQueryable();
 
