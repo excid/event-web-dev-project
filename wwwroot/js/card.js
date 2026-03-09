@@ -73,8 +73,8 @@ function renderPage() {
 
         const categorySpan  = createMetaSpan('fa-solid fa-briefcase', event.category);
         const appliedSpan   = createMetaSpan('fa-regular fa-square-check', `${event.currentMembers}/${event.maxMembers} applied`);
-        const expiresSpan   = createMetaSpan('fa-regular fa-clock', `expires ${event.expiresAt}`);
-        const activitySpan  = createMetaSpan('fa-regular fa-calendar', ``);
+        const expiresSpan   = createMetaSpan('fa-regular fa-clock', `Expires ${event.expiresAt}`);
+        const activitySpan  = createMetaSpan('fa-regular fa-calendar', `Activity date: ${event.activityDate}`);
         const statusSpan    = document.createElement('span');
         statusSpan.textContent = event.status;
         statusSpan.classList.add(`status-${event.status.toLowerCase()}`);
