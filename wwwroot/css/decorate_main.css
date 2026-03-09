@@ -535,6 +535,7 @@ button {
     color: #ef4444;
     border: 1px solid #ef4444;
     padding: 10px;
+    margin-top: 10px;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
@@ -579,11 +580,25 @@ button {
 }
 
 
-.btn-show-more:active {
-    transform: scale(0.97);
+.btn-show-more {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;  
 }
 
+.btn-show-more:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(56, 163, 142, 0.3); 
+}
 
+.btn-show-more:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-4px); }

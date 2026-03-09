@@ -69,7 +69,7 @@
 
     function buildPage() {
         return `
-        <div class="page-wrapper">
+        <div class="page-wrapper" style="padding-top: 80px;">
             <a href="#" class="back-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"></polyline>
