@@ -82,13 +82,14 @@ function renderPage() {
         metaInfo.append(categorySpan, appliedSpan, expiresSpan, activitySpan, statusSpan);
 
         const btnPrimary = document.createElement('button');
+        const br = document.createElement('br');
         btnPrimary.classList.add('btn-primary');
         btnPrimary.textContent = 'Event Detail';
         btnPrimary.onclick = () => {
             window.location.href = `/Event/Join?id=${event.id}`;
         };
 
-        cardFooter.append(metaInfo, btnPrimary);
+        cardFooter.append(metaInfo, br, btnPrimary);
         card.append(cardHeader, cardBody, cardFooter);
         container.appendChild(card);
     });
