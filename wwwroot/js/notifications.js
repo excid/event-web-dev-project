@@ -85,10 +85,7 @@
 
     // ── Time formatting ──────────────────────────────────────────────────────
     function parseDate(dateStr) {
-        // Try ISO with Z first; fall back to appending Z for UTC strings lacking it
-        let d = new Date(dateStr);
-        if (isNaN(d.getTime())) d = new Date(dateStr + 'Z');
-        return d;
+        return new Date(dateStr);
     }
 
     function timeAgo(dateStr) {

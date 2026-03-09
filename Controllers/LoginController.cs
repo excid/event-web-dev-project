@@ -74,7 +74,7 @@ public class LoginController : Controller
             UserName    = model.Email,
             Email       = model.Email,
             DisplayName = model.DisplayName,
-            CreatedAt   = DateTime.UtcNow
+            CreatedAt   = DateTime.Now
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);

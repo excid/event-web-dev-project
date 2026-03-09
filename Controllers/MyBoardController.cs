@@ -33,7 +33,7 @@ public class MyBoardController : Controller
             .ToListAsync();
 
         // Auto-mark expired posts
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         foreach (var post in myPosts.Where(p => p.Status == "Open" && p.ExpiresAt < now))
             post.Status = "Expired";
         await _db.SaveChangesAsync();

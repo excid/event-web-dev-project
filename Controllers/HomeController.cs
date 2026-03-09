@@ -62,7 +62,7 @@ public class HomeController : Controller
             query = query.Where(p => statusList.Contains(p.Status));
         }
 
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
 
         query = dateRange switch
         {

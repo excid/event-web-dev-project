@@ -24,7 +24,7 @@ public class Invitation
 
     public string? Message { get; set; }
 
-    public DateTime SentAt { get; set; } = DateTime.UtcNow;
+    public DateTime SentAt { get; set; } = DateTime.Now;
 
     // Navigation properties
     [ForeignKey("SenderId")]

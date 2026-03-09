@@ -64,7 +64,7 @@ public class EventController : Controller
             ApplicantName = displayName,
             Message       = model.Message,
             Status        = "Pending",
-            AppliedAt     = DateTime.UtcNow
+            AppliedAt     = DateTime.Now
         };
 
         _db.PostApplications.Add(application);
