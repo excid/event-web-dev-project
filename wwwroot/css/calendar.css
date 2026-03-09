@@ -1,6 +1,6 @@
 /* Layout & Base */
 .page-background {
-    background-color: #f8fafc; /* พื้นหลังสีเทาอ่อนตามรูป */
+    background-color: #f8fafc;
     min-height: 100vh;
     padding: 40px;
     font-family: 'Inter', -apple-system, sans-serif;
@@ -16,7 +16,7 @@
 
 .calendar-layout-grid {
     display: grid;
-    grid-template-columns: 1fr 350px; /* ฝั่งขวาฟิกความกว้างตามรูป */
+    grid-template-columns: 1fr 350px;
     gap: 24px;
     align-items: start;
 }
@@ -38,7 +38,7 @@
 .days-header-grid { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 16px; }
 .days-header-grid div { text-align: center; color: #94a3b8; font-size: 14px; font-weight: 500; }
 
-.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+test//.days-display-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
 
 .cal-day {
     min-height: 100px;
@@ -54,7 +54,7 @@
 .cal-day.not-current { opacity: 0.2; }
 .cal-day.today .day-number { color: #3b82f6; font-weight: 800; }
 
-.day-number { display: block; text-align: center; font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+test//.day-number { display: block; text-align: center; font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 8px; }
 
 .event-pill {
     font-size: 10px;
@@ -109,3 +109,88 @@
 .shopping, .cat-shopping { background-color: #ec4899; }
 .study, .cat-study { background-color: #22c55e; }
 .others, .cat-others { background-color: #64748b; }
+
+/* =============================================
+   Responsive - Mobile (768px and below)
+   ============================================= */
+@media (max-width: 768px) {
+
+    /* Remove side padding so the page breathes on phone */
+    .page-background {
+        padding: 16px;
+    }
+
+    /* Stack calendar + right panel vertically */
+    .calendar-layout-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Make calendar card padding tighter */
+    .card {
+        padding: 16px;
+    }
+
+    /* Smaller day cells so 7 columns fit on phone */
+    .cal-day {
+        min-height: 48px;
+        padding: 6px 4px;
+        border-radius: 8px;
+    }
+
+    /* Smaller day number text */
+    .day-number {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    /* Reduce gap between day cells */
+    .days-display-grid {
+        gap: 4px;
+    }
+
+    /* Hide event pills on very small cells - too cramped */
+    .event-pill {
+        display: none;
+    }
+
+    /* Keep the "+N more" text visible but tiny */
+    .more-text {
+        font-size: 9px;
+        color: #64748b;
+    }
+
+    /* Header text smaller */
+    .calendar-header h1 {
+        font-size: 20px;
+    }
+
+    /* Month title smaller */
+    .month-title {
+        font-size: 16px;
+    }
+
+    /* Details panel: full width below calendar */
+    .details-card {
+        width: 100%;
+    }
+}
+
+/* Extra small screens (480px and below) */
+@media (max-width: 480px) {
+    .page-background {
+        padding: 8px;
+    }
+
+    .cal-day {
+        min-height: 40px;
+        padding: 4px 2px;
+    }
+
+    .day-number {
+        font-size: 11px;
+    }
+
+    .days-header-grid div {
+        font-size: 11px;
+    }
+}
