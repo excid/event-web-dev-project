@@ -107,7 +107,6 @@
                     </div>`;
             });
 
-            // Demo Invitation (Matching screenshot)
             const invContainer = document.getElementById('invitationsContainer');
             if(activities.some(a => a.Title.includes("Korean BBQ"))) {
                 invContainer.innerHTML = `
@@ -123,5 +122,11 @@
                 invContainer.innerHTML = '<p class="empty-msg">No invitations for this date.</p>';
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const todayStr = '@Model.SelectedDate.ToString("yyyy-MM-dd")';
+            const todayEl = document.querySelector('.cal-day.selected');
+            selectDate(todayStr, todayEl);
+        });
     </script>
 }
