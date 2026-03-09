@@ -58,7 +58,7 @@
             <div class="invitation-card__top">
                 <div>
                     <h3 class="invitation-card__title">@receivedInvitation.Title</h3>
-                    <p class="invitation-card__meta">From <a href="/Profile/@receivedInvitation.SenderUserId" class="user-link">@receivedInvitation.Sender</a> • @receivedInvitation.ReceivedDate.ToString("M/d/yyyy")</p>
+                    <p class="invitation-card__meta">From <a href="/Profile/Index?userId=@receivedInvitation.SenderUserId" class="user-link">@receivedInvitation.Sender</a> • @receivedInvitation.ReceivedDate.ToString("M/d/yyyy")</p>
                     <p class="invitation-card__event">Event: @receivedInvitation.EventDate.ToString("M/d/yyyy")</p>
                 </div>
                 <div class="status-badge status-badge--@(receivedInvitation.Status?.ToLower())">
@@ -112,7 +112,7 @@
             <div class="invitation-card__top">
                 <div>
                     <h3 class="invitation-card__title">@sentInvitation.Title</h3>
-                    <p class="invitation-card__meta">To <a href="/Profile/@sentInvitation.ReceiverUserId" class="user-link">@sentInvitation.Receiver</a> • @sentInvitation.SentDate</p>
+                    <p class="invitation-card__meta">To <a href="/Profile/Index?userId=@sentInvitation.ReceiverUserId" class="user-link">@sentInvitation.Receiver</a> • @sentInvitation.SentDate</p>
                     <p class="invitation-card__event">Event: @sentInvitation.EventDate</p>
                 </div>
                 <div class="status-badge status-badge--@(sentInvitation.Status?.ToLower())">
