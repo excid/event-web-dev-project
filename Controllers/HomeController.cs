@@ -17,14 +17,15 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
+        var now = DateTime.Now;
         var posts = await _context.ActivityPosts
-            .Where(p => !p.IsDeleted && p.Status == "Open")
+            .Where(p => !p.IsDeleted && p.Status == "Open" && p.ExpiresAt > now)
             .Include(p => p.Applications)
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 
         var locations = await _context.ActivityPosts
-        .Where(p => !p.IsDeleted && p.Status == "Open")
+        .Where(p => !p.IsDeleted && p.Status == "Open" && p.ExpiresAt > now)
         .Select(p => p.Location)
         .Distinct()
         .OrderBy(l => l)
@@ -38,8 +39,10 @@ public class HomeController : Controller
     public async Task<IActionResult> Search(string? q, string? categories, string? location,
         string? sortBy, string? dateRange, string? activityDateRange, string? statusFilter)
     {
+        var now = DateTime.Now;
+
         var query = _context.ActivityPosts
-            .Where(p => !p.IsDeleted)
+            .Where(p => !p.IsDeleted && (p.Status != "Open" || p.ExpiresAt > now))
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
@@ -61,8 +64,6 @@ public class HomeController : Controller
             var statusList = statusFilter.Split(',').Select(s => s.Trim()).ToList();
             query = query.Where(p => statusList.Contains(p.Status));
         }
-
-        var now = DateTime.UtcNow;
 
         query = dateRange switch
         {

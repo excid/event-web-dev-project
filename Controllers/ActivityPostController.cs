@@ -27,6 +27,16 @@ public class ActivityPostController : Controller
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
 
+        // Auto-mark expired posts
+        var now = DateTime.Now;
+        var expiredPosts = allPosts.Where(p => p.Status == "Open" && p.ExpiresAt < now).ToList();
+        if (expiredPosts.Any())
+        {
+            foreach (var post in expiredPosts)
+                post.Status = "Expired";
+            await _db.SaveChangesAsync();
+        }
+
         if (!allPosts.Any())
             return View(null);
 
@@ -205,7 +215,7 @@ public class ActivityPostController : Controller
     public async Task<IActionResult> Apply(int postId, string applicantName, string message)
     {
         var post = await _db.ActivityPosts.FindAsync(postId);
-        if (post == null || post.Status == "Closed" || post.IsDeleted)
+        if (post == null || post.Status == "Closed" || post.Status == "Expired" || post.IsDeleted || post.ExpiresAt < DateTime.Now)
             return Json(new { success = false, error = "Post is not available" });
 
         var application = new PostApplication

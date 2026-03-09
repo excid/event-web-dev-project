@@ -29,7 +29,7 @@ public class ExpiryCheckerService : BackgroundService
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var expired = await db.ActivityPosts
-            .Where(p => p.Status == "Open" && p.ExpiresAt < DateTime.UtcNow)
+            .Where(p => p.Status == "Open" && p.ExpiresAt < DateTime.Now)
             .ToListAsync();
 
         if (!expired.Any()) return;
