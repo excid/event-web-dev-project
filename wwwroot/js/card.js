@@ -2,7 +2,7 @@ const eventsData = window.eventData || [];
 const container = document.getElementById('event-list-container');
 
 // ── Pagination state ────────────────────────────────────
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 4;
 let currentPage = 1;
 let currentData = eventsData;
 
@@ -74,7 +74,7 @@ function renderPage() {
         const categorySpan  = createMetaSpan('fa-solid fa-briefcase', event.category);
         const appliedSpan   = createMetaSpan('fa-regular fa-square-check', `${event.currentMembers}/${event.maxMembers} applied`);
         const expiresSpan   = createMetaSpan('fa-regular fa-clock', `expires ${event.expiresAt}`);
-        const activitySpan  = createMetaSpan('fa-regular fa-calendar', `activity date: ${event.activityDate}`);
+        const activitySpan  = createMetaSpan('fa-regular fa-calendar', ``);
         const statusSpan    = document.createElement('span');
         statusSpan.textContent = event.status;
         statusSpan.classList.add(`status-${event.status.toLowerCase()}`);
@@ -106,8 +106,8 @@ function renderPagination(totalPages) {
 
     // Previous button
     const prevBtn = document.createElement('button');
-    prevBtn.classList.add('page-btn');
-    prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+    prevBtn.classList.add('page-btn', 'previous');
+    prevBtn.innerHTML = 'Previous';
     prevBtn.disabled = currentPage === 1;
     prevBtn.addEventListener('click', () => {
         if (currentPage > 1) { currentPage--; renderPage(); }
@@ -130,7 +130,7 @@ function renderPagination(totalPages) {
     // Next button
     const nextBtn = document.createElement('button');
     nextBtn.classList.add('page-btn', 'next');
-    nextBtn.innerHTML = 'Next <i class="fa-solid fa-chevron-right"></i>';
+    nextBtn.innerHTML = 'Next';
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener('click', () => {
         if (currentPage < totalPages) { currentPage++; renderPage(); }
