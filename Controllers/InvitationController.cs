@@ -63,6 +63,19 @@ public class InvitationController : Controller
         };
 
         _db.Invitations.Add(invitation);
+
+        var sender = await _userManager.FindByIdAsync(senderId);
+        var senderName = sender?.DisplayName ?? sender?.UserName ?? "Someone";
+        _db.Notifications.Add(new Notification
+        {
+            UserId    = receiverId,
+            Type      = "InvitationReceived",
+            Title     = "New Invitation",
+            Message   = $"{senderName} invited you to join \"{post.Title}\".",
+            ActionUrl = "/MyBoard/Index",
+            CreatedAt = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
 
         return Json(new { success = true });
@@ -85,6 +98,27 @@ public class InvitationController : Controller
             return Json(new { success = false, error = "Invitation is no longer pending." });
 
         invitation.Status = action == "accept" ? "Accepted" : "Rejected";
+
+        var responder = await _userManager.FindByIdAsync(currentUserId);
+        var responderName = responder?.DisplayName ?? responder?.UserName ?? "Someone";
+        var post = await _db.ActivityPosts.FindAsync(invitation.PostId);
+        var postTitle = post?.Title ?? "an event";
+
+        var notifTitle   = action == "accept" ? "Invitation Accepted" : "Invitation Declined";
+        var notifMessage = action == "accept"
+            ? $"{responderName} accepted your invitation to \"{postTitle}\"."
+            : $"{responderName} declined your invitation to \"{postTitle}\".";
+
+        _db.Notifications.Add(new Notification
+        {
+            UserId    = invitation.SenderId,
+            Type      = action == "accept" ? "InvitationAccepted" : "InvitationRejected",
+            Title     = notifTitle,
+            Message   = notifMessage,
+            ActionUrl = "/MyBoard/Index",
+            CreatedAt = DateTime.UtcNow
+        });
+
         await _db.SaveChangesAsync();
 
         return Json(new { success = true, status = invitation.Status });
