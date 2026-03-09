@@ -23,6 +23,7 @@ x86/
 bld/
 [Bb]in/
 bin\
+bin\\
 [Oo]bj/
 obj\
 [Ll]og/
