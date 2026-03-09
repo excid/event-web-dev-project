@@ -514,6 +514,4 @@ button {
     }
 }
 
-select option[value=""] {
-    display: none;
-}
+
