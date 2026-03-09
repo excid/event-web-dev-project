@@ -26,24 +26,42 @@
 
         <div class="stat-container">
             <div class="stat-item">
-                <div class="stat-icon"></div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
                 <div class="stat-text">
-                    @* Real count from DB *@
-                    <span class="stat-number">@Model.Count </span>
+                    <span class="stat-number">@Model.Count</span>
                     <span class="stat-name">Event</span>
                 </div>
             </div>
             <div class="stat-item">
-                <div class="stat-icon"></div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
                 <div class="stat-text">
-                    <span class="stat-number">@Model.Sum(p => p.Applications.Count) </span>
+                    <span class="stat-number">@Model.Sum(p => p.Applications.Count)</span>
                     <span class="stat-name">Candidates</span>
                 </div>
             </div>
             <div class="stat-item">
-                <div class="stat-icon"></div>
+                <div class="stat-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
                 <div class="stat-text">
-                    <span class="stat-number">@Model.Select(p => p.PostedBy).Distinct().Count() </span>
+                    <span class="stat-number">@Model.Select(p => p.PostedBy).Distinct().Count()</span>
                     <span class="stat-name">Owner</span>
                 </div>
             </div>
@@ -90,7 +108,6 @@
                     </div>
                 </div>
 
-                <!-- Status filter -->
                 <div class="filter-group">
                     <label>Status</label>
                     <div class="checkbox-list">
@@ -106,60 +123,55 @@
                     </div>
                 </div>
 
-                
+                <button class="btn-show-more" id="btn-show-more">Show More</button>
 
-                <!-- Date filter -->
-                <div class="filter-group">
-                    <label>Expires within</label>
-                    <div class="input-with-icon">
-                        <select id="date-select">
-                            <option value="">Any time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This week</option>
-                            <option value="month">This month</option>
-                        </select>
-                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                <div id="extra-filters" style="display:none">
+
+                    <div class="filter-group" style="margin-top:16px">
+                        <label>Expires within</label>
+                        <div class="input-with-icon">
+                            <select id="date-select">
+                                <option value="">Any time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This week</option>
+                                <option value="month">This month</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
                     </div>
+
+                    <div class="filter-group">
+                        <label>Activity within</label>
+                        <div class="input-with-icon">
+                            <select id="activity-date-select">
+                                <option value="">Any time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This week</option>
+                                <option value="month">This month</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Category</label>
+                        <div class="checkbox-list" id="category-list">
+                            @foreach (var category in Model.Select(p => p.Category).Distinct())
+                            {
+                                var count = Model.Count(p => p.Category == category);
+                                <label class="checkbox-item category-item">
+                                    <span><input type="checkbox" value="@category"> @category</span>
+                                    <span class="badge">@count</span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                    <button class="btn-clear-filter" id="btn-clear-filter">
+                        <i class="fa-solid fa-xmark"></i> Clear All Filters
+                    </button>
+
                 </div>
-
-                <!-- Activity date filter -->
-                <div class="filter-group">
-                    <label>Activity within</label>
-                    <div class="input-with-icon">
-                        <select id="activity-date-select">
-                            <option value="">Any time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This week</option>
-                            <option value="month">This month</option>
-                        </select>
-                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
-                    </div>
-                </div>
-
-                <div class="filter-group">
-                    <label>Category</label>
-                    <div class="checkbox-list" id="category-list">
-                        @foreach (var category in Model.Select(p => p.Category).Distinct())
-                        {
-                            var count = Model.Count(p => p.Category == category);
-                            <label class="checkbox-item category-item" style="display:none">
-                                <span><input type="checkbox" value="@category"> @category</span>
-                                <span class="badge">@count</span>
-                            </label>
-                        }
-                    </div>
-                    <button class="btn-show-more" id="btn-show-more">Show More</button>
-                </div>
-
-                @* <div class="filter-group">
-                    <label>Tags</label>
-                    <div class="tags-container">
-                        <span class="tag">engineering</span>
-                        <span class="tag">design</span>
-                        <span class="tag">ui/ux</span>
-                        <span class="tag">marketing</span>
-                    </div>
-                </div> *@
             </div>
 
             <div class="ad-banner">
@@ -171,23 +183,21 @@
         <main class="content">
             <div class="event-list" id="event-list-container"></div>
 
-            @* Pass real DB data to card.js as a JS variable *@
-            @* card.js reads window.eventData instead of its own mockup array *@
             <script>
                 window.eventData = @Html.Raw(JsonSerializer.Serialize(Model.Select(p => new {
-                    id          = p.Id,
-                    title       = p.Title,
-                    category    = p.Category,
-                    description = p.Description,
-                    location    = p.Location,
-                    postedBy    = p.PostedBy,
-                    postedAt    = p.PostedAt.ToString("MMM d, yyyy"),
-                    expiresAt   = p.ExpiresAt.ToString("MMM d, yyyy"),
-                    activityDate = p.ActivityDate.ToString("MMM d, yyyy"),
-                    maxMembers  = p.MaxMembers,
+                    id             = p.Id,
+                    title          = p.Title,
+                    category       = p.Category,
+                    description    = p.Description,
+                    location       = p.Location,
+                    postedBy       = p.PostedBy,
+                    postedAt       = p.PostedAt.ToString("MMM d, yyyy"),
+                    expiresAt      = p.ExpiresAt.ToString("MMM d, yyyy"),
+                    activityDate   = p.ActivityDate.ToString("MMM d, yyyy"),
+                    maxMembers     = p.MaxMembers,
                     currentMembers = p.CurrentMembers,
-                    spotsLeft   = p.SpotsLeft,
-                    status      = p.Status,
+                    spotsLeft      = p.SpotsLeft,
+                    status         = p.Status,
                     applicationsCount = p.Applications.Count
                 })));
             </script>

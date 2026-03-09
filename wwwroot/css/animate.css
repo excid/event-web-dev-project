@@ -43,3 +43,72 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+
+.btn-clear-filter:active {
+    animation: shake 0.3s ease;
+}
+
+
+
+.checkbox-item {
+    transition: background-color 0.15s ease, transform 0.15s ease;
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+
+.checkbox-item:active {
+    transform: scale(0.97);
+    background-color: var(--primary-light);
+}
+
+
+.checkbox-item:has(input:checked) {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+
+.input-with-icon select:active {
+    transform: scale(0.99);
+}
+
+
+.input-with-icon select:not([value=""]):valid {
+    border-color: var(--primary-color);
+    background-color: #f0faf8;
+}
+
+.search-button {
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.search-button:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 8px rgba(56, 163, 142, 0.4);
+}
+
+.search-button:hover {
+    box-shadow: 0 4px 12px rgba(56, 163, 142, 0.3);
+}
+
+.search-input {
+    transition: box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+    box-shadow: 0 0 0 3px rgba(56, 163, 142, 0.2);
+    outline: none;
+}
+.filter-box input[type="text"] {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-box input[type="text"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(56, 163, 142, 0.15);
+}
+
+.filter-box input[type="text"]:active {
+    transform: scale(0.99);
+}

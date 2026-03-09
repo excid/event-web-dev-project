@@ -143,12 +143,23 @@ renderCards(eventsData);
 
 // ── Show More ──────────────────────────────────────
 document.getElementById('btn-show-more')?.addEventListener('click', function () {
-    const items = document.querySelectorAll('.category-item');
-    const isHidden = items[0]?.style.display === 'none';
-    items.forEach(item => {
-        item.style.display = isHidden ? 'flex' : 'none';
-    });
-    this.textContent = isHidden ? 'Show Less' : 'Show More';
+    const extra = document.getElementById('extra-filters');
+    const isOpen = extra.classList.contains('open');
+
+    if (isOpen) {
+        extra.classList.remove('open');
+        extra.style.display = 'block';  // ยังอยู่ใน DOM แต่ค่อยๆ ซ่อน
+        setTimeout(() => {
+            if (!extra.classList.contains('open')) extra.style.display = 'none';
+        }, 400);
+        this.textContent = 'Show More';
+        extra.before(this);
+    } else {
+        extra.style.display = 'block';
+        setTimeout(() => extra.classList.add('open'), 10);
+        this.textContent = 'Show Less';
+        extra.after(this);
+    }
 });
 
 // ── AJAX Search ──────────────────────────────────────
@@ -206,12 +217,14 @@ async function fetchResults() {
     }
 }
 
-// Parallax
+
 window.addEventListener('scroll', () => {
     requestAnimationFrame(() => {
         const banner = document.querySelector('.banner');
         if (banner) {
-            banner.style.backgroundPositionY = `calc(50% + ${window.scrollY * 0.9}px)`;
+            const maxScroll = banner.offsetHeight;
+            const scrollY = Math.min(window.scrollY, maxScroll);
+            banner.style.backgroundPositionY = `calc(50% + ${scrollY * 0.4}px)`;
         }
     });
 });
@@ -240,3 +253,21 @@ function observeCards() {
 
 observeCards();
 
+
+document.getElementById('btn-clear-filter')?.addEventListener('click', function () {
+    // reset text input
+    const textInput = document.querySelector('.filter-box input[type="text"]');
+    if (textInput) textInput.value = '';
+
+    // reset selects
+    document.getElementById('location-select').value = '';
+    document.getElementById('sort-select').value = 'newest';
+    document.getElementById('date-select').value = '';
+
+    // reset checkboxes
+    document.querySelectorAll('.status-checkbox, .checkbox-item input:not(.status-checkbox)').forEach(cb => {
+        cb.checked = false;
+    });
+
+    fetchResults();
+});

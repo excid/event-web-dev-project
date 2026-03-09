@@ -5,13 +5,8 @@ html {
 
 
 .banner {
+    position: relative;
     text-align: center;
-    background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                      url('/images/illustration-anime-city.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    /* background-attachment: fixed;  */
     min-height: 500px;
     padding: 6rem 2rem;
     display: flex;
@@ -19,10 +14,27 @@ html {
     align-items: center;
     color: #ffffff;
     width: 100%;
-    justify-content: center; 
-    will-change: background-position;
+    justify-content: center;
+    overflow: hidden;
 }
 
+.banner::before {
+    content: '';
+    position: absolute;  
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url('/images/illustration-anime-city.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;  
+    z-index: 0;
+}
+
+.banner > * {
+    position: relative;
+    z-index: 2;
+}
 
 .title {
     font-size: 2.5rem;
@@ -517,3 +529,63 @@ button {
 }
 
 
+.btn-clear-filter {
+    width: 100%;
+    background-color: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.btn-clear-filter:hover {
+    background-color: #fee2e2;
+}
+/* ================= SIDEBAR ANIMATIONS ================= */
+
+/* extra-filters smooth slide */
+#extra-filters {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    max-height: 0;
+    opacity: 0;
+}
+
+#extra-filters.open {
+    max-height: 600px;
+    opacity: 1;
+}
+
+
+.checkbox-item input[type="checkbox"] {
+    transition: transform 0.15s ease;
+}
+
+.checkbox-item input[type="checkbox"]:active {
+    transform: scale(0.85);
+}
+
+
+.input-with-icon select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-with-icon select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(56, 163, 142, 0.15);
+}
+
+
+.btn-show-more:active {
+    transform: scale(0.97);
+}
+
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
