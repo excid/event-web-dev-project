@@ -9,7 +9,7 @@
     'use strict';
 
     // ── Config ──────────────────────────────────────────────────────────────
-    const POLL_INTERVAL_MS = 30_000;   // check every 30 s
+    const POLL_INTERVAL_MS = 1_000;   // check every 30 s
     const MAX_TOASTS       = 3;        // max simultaneous toast popups
 
     // ── State ───────────────────────────────────────────────────────────────
