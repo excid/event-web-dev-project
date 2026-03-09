@@ -67,7 +67,7 @@
                     <div class="input-with-icon">
                         <i class="fa-solid fa-location-dot icon"></i>
                         <select id="location-select">
-                            <option value="" disabled selected>Choose location</option>
+                            <option value="">Any location</option>
                             @foreach (var location in ViewBag.Locations)
                             {
                                 <option value="@location">@location</option>
@@ -83,6 +83,7 @@
                         <select id="sort-select">
                             <option value="newest">Newest First</option>
                             <option value="expiring">Expiring Soon</option>
+                            <option value="activity">Activity Date</option>
                             <option value="members">Most Members</option>
                         </select>
                         <i class="fa-solid fa-chevron-down arrow-icon"></i>
@@ -112,6 +113,20 @@
                     <label>Expires within</label>
                     <div class="input-with-icon">
                         <select id="date-select">
+                            <option value="">Any time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This week</option>
+                            <option value="month">This month</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Activity date filter -->
+                <div class="filter-group">
+                    <label>Activity within</label>
+                    <div class="input-with-icon">
+                        <select id="activity-date-select">
                             <option value="">Any time</option>
                             <option value="today">Today</option>
                             <option value="week">This week</option>
@@ -168,6 +183,7 @@
                     postedBy    = p.PostedBy,
                     postedAt    = p.PostedAt.ToString("MMM d, yyyy"),
                     expiresAt   = p.ExpiresAt.ToString("MMM d, yyyy"),
+                    activityDate = p.ActivityDate.ToString("MMM d, yyyy"),
                     maxMembers  = p.MaxMembers,
                     currentMembers = p.CurrentMembers,
                     spotsLeft   = p.SpotsLeft,

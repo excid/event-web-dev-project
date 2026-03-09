@@ -35,16 +35,16 @@ public class HomeController : Controller
         return View(posts);
     }
     [HttpGet]
-    public async Task<IActionResult> Search(string? q, string? categories  ,string? location,
-    string? sortBy, string? dateRange, string? statusFilter, bool availableOnly = false)
+    public async Task<IActionResult> Search(string? q, string? categories, string? location,
+        string? sortBy, string? dateRange, string? activityDateRange, string? statusFilter)
     {
         var query = _context.ActivityPosts
             .Where(p => !p.IsDeleted)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
-            query = query.Where(p => 
-                EF.Functions.ILike(p.Title, $"%{q}%") || 
+            query = query.Where(p =>
+                EF.Functions.ILike(p.Title, $"%{q}%") ||
                 EF.Functions.ILike(p.Description, $"%{q}%"));
 
         if (!string.IsNullOrWhiteSpace(categories))
@@ -52,7 +52,7 @@ public class HomeController : Controller
             var catList = categories.Split(',').Select(c => c.Trim()).ToList();
             query = query.Where(p => catList.Contains(p.Category));
         }
-        
+
         if (!string.IsNullOrWhiteSpace(location))
             query = query.Where(p => p.Location == location);
 
@@ -62,8 +62,8 @@ public class HomeController : Controller
             query = query.Where(p => statusList.Contains(p.Status));
         }
 
-
         var now = DateTime.UtcNow;
+
         query = dateRange switch
         {
             "today" => query.Where(p => p.ExpiresAt >= now && p.ExpiresAt < now.AddDays(1)),
@@ -72,13 +72,22 @@ public class HomeController : Controller
             _       => query
         };
 
+        query = activityDateRange switch
+        {
+            "today" => query.Where(p => p.ActivityDate >= now && p.ActivityDate < now.AddDays(1)),
+            "week"  => query.Where(p => p.ActivityDate >= now && p.ActivityDate < now.AddDays(7)),
+            "month" => query.Where(p => p.ActivityDate >= now && p.ActivityDate < now.AddDays(30)),
+            _       => query
+        };
+
         query = sortBy switch
         {
             "expiring" => query.OrderBy(p => p.ExpiresAt),
+            "activity" => query.OrderBy(p => p.ActivityDate),
             "members"  => query.OrderByDescending(p => p.CurrentMembers),
             _          => query.OrderByDescending(p => p.PostedAt)  // newest
         };
-        
+
         var results = await query
             .Select(p => new {
                 id             = p.Id,
@@ -89,6 +98,7 @@ public class HomeController : Controller
                 postedBy       = p.PostedBy,
                 postedAt       = p.PostedAt.ToString("MMM d, yyyy"),
                 expiresAt      = p.ExpiresAt.ToString("MMM d, yyyy"),
+                activityDate   = p.ActivityDate.ToString("MMM d, yyyy"),
                 maxMembers     = p.MaxMembers,
                 currentMembers = p.CurrentMembers,
                 spotsLeft      = p.SpotsLeft,
@@ -98,9 +108,7 @@ public class HomeController : Controller
 
         return Json(results);
     }
-        
 
-    
     
 
     public IActionResult Privacy()
