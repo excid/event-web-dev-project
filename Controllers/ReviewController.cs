@@ -106,6 +106,18 @@ public class ReviewController : Controller
         _db.Reviews.Add(review);
         await _db.SaveChangesAsync();
 
+        var displayName = isAnonymous ? "Someone" : (reviewer?.DisplayName ?? reviewer?.UserName ?? "Someone");
+        _db.Notifications.Add(new Notification
+        {
+            UserId    = revieweeId,
+            Type      = "ReviewReceived",
+            Title     = "New Review",
+            Message   = $"{displayName} left you a {rating}-star review.",
+            ActionUrl = "/Profile/Index",
+            CreatedAt = DateTime.UtcNow
+        });
+        await _db.SaveChangesAsync();
+
         return Json(new { success = true });
     }
 

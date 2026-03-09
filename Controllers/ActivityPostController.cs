@@ -142,6 +142,19 @@ public class ActivityPostController : Controller
         if (post.CurrentMembers < post.MaxMembers)
             post.CurrentMembers++;
 
+        if (application.ApplicantId != null)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId    = application.ApplicantId,
+                Type      = "ApplicationAccepted",
+                Title     = "Application Accepted",
+                Message   = $"Your application to join \"{post.Title}\" was accepted!",
+                ActionUrl = "/MyBoard/Index",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
         await _db.SaveChangesAsync();
 
         return Json(new {
@@ -167,6 +180,20 @@ public class ActivityPostController : Controller
         if (application == null) return NotFound();
 
         application.Status = "Rejected";
+
+        if (application.ApplicantId != null)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId    = application.ApplicantId,
+                Type      = "ApplicationRejected",
+                Title     = "Application Declined",
+                Message   = $"Your application to join \"{post.Title}\" was not accepted.",
+                ActionUrl = "/MyBoard/Index",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
         await _db.SaveChangesAsync();
 
         return Json(new { success = true });
@@ -192,6 +219,21 @@ public class ActivityPostController : Controller
         };
 
         _db.PostApplications.Add(application);
+
+        // Notify the post owner that a new application has arrived
+        if (post.OwnerId != null && post.OwnerId != application.ApplicantId)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId    = post.OwnerId,
+                Type      = "ApplicationReceived",
+                Title     = "New Application",
+                Message   = $"{applicantName} applied to join \"{post.Title}\".",
+                ActionUrl = $"/ActivityPost/Index/{post.Id}",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
         await _db.SaveChangesAsync();
 
         return Json(new { success = true, applicationId = application.Id });
