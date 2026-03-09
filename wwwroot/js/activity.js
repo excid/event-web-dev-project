@@ -25,6 +25,7 @@
             description: data.description,
             location: data.location,
             expires: data.expiresAt,
+            activityDate: data.activityDate,
             membersJoined: data.currentMembers,
             membersTotal: data.maxMembers,
             applicationMode: data.applicationMode
@@ -125,6 +126,12 @@
                         ${iconCalendar()} Expires
                     </span>
                     <span class="meta-value">${ACTIVITY.expires}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-item-row">
+                        ${iconCalendar()} Activity Date
+                    </span>
+                    <span class="meta-value">${ACTIVITY.activityDate}</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-item-row">

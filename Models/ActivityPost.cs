@@ -27,6 +27,8 @@ public class ActivityPost
 
     public DateTime ExpiresAt { get; set; }
 
+    public DateTime ActivityDate { get; set; }
+
     [MaxLength(100)]
     public string ApplicationMode { get; set; } = "Owner selects";
 

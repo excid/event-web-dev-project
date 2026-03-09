@@ -7,20 +7,36 @@ const locationInput  = document.getElementById('location');
 const participantInput = document.getElementById('participant');
 const dateInput      = document.getElementById('end-date');
 const timeInput      = document.getElementById('end-time');
+const activityDateInput = document.getElementById('activity-date');
+const activityTimeInput = document.getElementById('activity-time');
 const createBtn      = document.querySelector('.createpost-btn');
 const cancelBtn      = document.querySelector('.canclepost-btn');
 
 const requiredFields = [
     titleInput, categorySelect, descriptionInput,
-    locationInput, participantInput, dateInput, timeInput
+    locationInput, participantInput, dateInput, timeInput,
+    activityDateInput, activityTimeInput
 ];
 
 // Set minimum date to today
 const setMinDate = () => {
     const now = new Date();
-    dateInput.setAttribute('min', now.toISOString().split('T')[0]);
+    const todayStr = now.toISOString().split('T')[0];
+    dateInput.setAttribute('min', todayStr);
+    activityDateInput.setAttribute('min', todayStr);
 };
 setMinDate();
+
+// When expiration date changes, update activity date minimum
+dateInput.addEventListener('change', function () {
+    if (dateInput.value) {
+        activityDateInput.setAttribute('min', dateInput.value);
+        // If activity date is now before expiration date, clear it
+        if (activityDateInput.value && activityDateInput.value < dateInput.value) {
+            activityDateInput.value = '';
+        }
+    }
+});
 
 dateInput.addEventListener('input', function () {
     if (!dateInput.value) return;
@@ -28,6 +44,15 @@ dateInput.addEventListener('input', function () {
     if (parts[0] && parts[0].length > 4) {
         parts[0] = parts[0].slice(0, 4);
         dateInput.value = parts.join('-');
+    }
+});
+
+activityDateInput.addEventListener('input', function () {
+    if (!activityDateInput.value) return;
+    const parts = activityDateInput.value.split('-'); // "yyyy-MM-dd"
+    if (parts[0] && parts[0].length > 4) {
+        parts[0] = parts[0].slice(0, 4);
+        activityDateInput.value = parts.join('-');
     }
 });
 
@@ -74,16 +99,26 @@ createBtn.addEventListener('click', async function(e) {
         return;
     }
 
+    const expirationDateTime = new Date(`${dateInput.value}T${timeInput.value}`);
+    const activityDateTime   = new Date(`${activityDateInput.value}T${activityTimeInput.value}`);
+    if (activityDateTime < expirationDateTime) {
+        alert('Activity date must be on or after the expiration date.');
+        triggerError(activityDateInput);
+        triggerError(activityTimeInput);
+        return;
+    }
+
     const selectedMode = document.querySelector('input[name="join_mode"]:checked').value;
 
     const eventData = {
-        title:       titleInput.value.trim(),
-        category:    categorySelect.value,
-        description: descriptionInput.value.trim(),
-        location:    locationInput.value.trim(),
-        maxMembers:  memberCount,
-        deadline:    `${dateInput.value}T${timeInput.value}`,
-        mode:        selectedMode
+        title:        titleInput.value.trim(),
+        category:     categorySelect.value,
+        description:  descriptionInput.value.trim(),
+        location:     locationInput.value.trim(),
+        maxMembers:   memberCount,
+        deadline:     `${dateInput.value}T${timeInput.value}`,
+        activityDate: `${activityDateInput.value}T${activityTimeInput.value}`,
+        mode:         selectedMode
     };
 
     // Disable button while submitting

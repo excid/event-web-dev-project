@@ -23,5 +23,8 @@ public class CreatePostViewModel
     public string Deadline { get; set; } = string.Empty;  // comes as "yyyy-MM-ddTHH:mm" from JS
 
     [Required]
+    public string ActivityDate { get; set; } = string.Empty;  // comes as "yyyy-MM-ddTHH:mm" from JS, must be >= Deadline
+
+    [Required]
     public string Mode { get; set; } = "fifo";
 }

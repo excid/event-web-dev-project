@@ -225,6 +225,7 @@ public class ActivityPostController : Controller
             MaxMembers      = model.MaxMembers,
             CurrentMembers  = 0,
             ExpiresAt       = DateTime.Parse(model.Deadline).ToUniversalTime(),
+            ActivityDate    = DateTime.Parse(model.ActivityDate).ToUniversalTime(),
             ApplicationMode = modeLabel,
             Status          = "Open",
             PostedBy        = displayName,

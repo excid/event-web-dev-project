@@ -43,6 +43,7 @@ namespace event_web_dev_project.Models
         public string? Title { get; set; }
         public string? Status { get; set; }
         public string? Receiver { get; set; }
+        public string? ReceiverUserId { get; set; }
         public DateTime SentDate { get; set; }
         public DateTime EventDate { get; set; }
         public string? Message { get; set; }

@@ -44,8 +44,8 @@ public class CalendarController : Controller
         // 1. ดึงข้อมูล My Posts
         var myPosts = await _db.ActivityPosts
             .Where(p => p.OwnerId == userId && 
-                        p.ExpiresAt.Month == targetMonth && 
-                        p.ExpiresAt.Year == targetYear)
+                        p.ActivityDate.Month == targetMonth && 
+                        p.ActivityDate.Year == targetYear)
             .ToListAsync();
 
         foreach (var post in myPosts)
@@ -53,7 +53,7 @@ public class CalendarController : Controller
             model.AllEventsThisMonth.Add(new CalendarEventItem
             {
                 Title = post.Title,
-                EventDate = post.ExpiresAt,
+                EventDate = post.ActivityDate,
                 Category = post.Category,
                 Status = post.Status,
                 SourceType = "Post",
@@ -65,8 +65,8 @@ public class CalendarController : Controller
         var myApps = await _db.PostApplications
             .Include(a => a.ActivityPost)
             .Where(a => a.ApplicantId == userId && 
-                        a.ActivityPost.ExpiresAt.Month == targetMonth && 
-                        a.ActivityPost.ExpiresAt.Year == targetYear)
+                        a.ActivityPost.ActivityDate.Month == targetMonth && 
+                        a.ActivityPost.ActivityDate.Year == targetYear)
             .ToListAsync();
 
         foreach (var app in myApps)
@@ -74,7 +74,7 @@ public class CalendarController : Controller
             model.AllEventsThisMonth.Add(new CalendarEventItem
             {
                 Title = app.ActivityPost?.Title,
-                EventDate = app.ActivityPost.ExpiresAt,
+                EventDate = app.ActivityPost.ActivityDate,
                 Category = app.ActivityPost?.Category,
                 Status = app.Status,
                 SourceType = "Application",
