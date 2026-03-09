@@ -51,15 +51,42 @@ public class ProfileController : Controller
 
         var profileUserId = user.Id;
 
-        var postHistory = await _context.ActivityPosts
-            .Where(p => p.OwnerId == profileUserId && p.Status == "Closed")
-            .OrderByDescending(p => p.PostedAt)
+        // IDs of activities the profile user has joined as an accepted participant
+        var joinedActivityIds = await _context.PostApplications
+            .Where(a => a.ApplicantId == profileUserId && a.Status == "Accepted")
+            .Select(a => a.PostId)
             .ToListAsync();
 
-        var upcomingActivities = await _context.ActivityPosts
-            .Where(p => p.OwnerId == profileUserId && !p.IsDeleted && p.Status == "Open")
-            .OrderBy(p => p.ExpiresAt)
+        var now = DateTime.Now;
+
+        // Recent Activity History: all activities (owned or joined) whose ActivityDate has passed
+        var postHistory = await _context.ActivityPosts
+            .Where(p => !p.IsDeleted && p.ActivityDate <= now &&
+                        (p.OwnerId == profileUserId || joinedActivityIds.Contains(p.Id)))
+            .OrderByDescending(p => p.ActivityDate)
             .ToListAsync();
+
+        // Upcoming Activities: all activities (owned or joined) whose ActivityDate hasn't passed yet
+        var upcomingActivities = await _context.ActivityPosts
+            .Where(p => !p.IsDeleted && p.ActivityDate > now &&
+                        (p.OwnerId == profileUserId || joinedActivityIds.Contains(p.Id)))
+            .OrderBy(p => p.ActivityDate)
+            .ToListAsync();
+
+        // Collect display names for activity owners (needed for the per-activity review button)
+        var ownerIds = postHistory
+            .Select(p => p.OwnerId)
+            .Where(id => id != null && id != profileUserId)
+            .Distinct()
+            .ToList();
+
+        var activityOwnerNames = ownerIds.Count > 0
+            ? await _context.Users
+                .Where(u => ownerIds.Contains(u.Id))
+                .ToDictionaryAsync(
+                    u => u.Id,
+                    u => u.DisplayName ?? u.UserName ?? "Unknown User")
+            : new Dictionary<string, string>();
 
         var allReviews = await _context.Reviews
             .Where(r => r.RevieweeId == profileUserId)
@@ -113,13 +140,16 @@ public class ProfileController : Controller
             ExistingReviewByCurrentUser = existingReviewByCurrentUser,
 
             // Compute stats from already-loaded collections
-            OrganizedCount = postHistory.Count + upcomingActivities.Count,
+            OrganizedCount = postHistory.Count(p => p.OwnerId == profileUserId)
+                           + upcomingActivities.Count(p => p.OwnerId == profileUserId),
 
             JoinedCount = await _context.PostApplications
                 .CountAsync(a => a.ApplicantId == profileUserId && a.Status == "Accepted"),
 
             OwnedOpenPosts       = ownedOpenPosts,
             AlreadyInvitedPostIds = alreadyInvitedPostIds,
+
+            ActivityOwnerNames   = activityOwnerNames,
         };
 
         return View(viewModel);

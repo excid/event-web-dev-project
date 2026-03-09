@@ -57,37 +57,6 @@
                 else
                 {
                     <div class="profile-actions">
-                        @if (Model.HasReviewedByCurrentUser)
-                        {
-                            <button class="edit-profile-btn"
-                                    id="btn-open-profile-review"
-                                    aria-label="Edit your review for @Model.DisplayName"
-                                    data-action="open-profile-review"
-                                    data-reviewee-id="@Model.UserId"
-                                    data-reviewee-name="@Model.DisplayName"
-                                    data-existing-rating="@(Model.ExistingReviewByCurrentUser?.Rating ?? 0)"
-                                    data-existing-comment="@(Model.ExistingReviewByCurrentUser?.Comment ?? "")"
-                                    data-existing-anonymous="@(Model.ExistingReviewByCurrentUser?.IsAnonymous == true ? "true" : "false")">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                                Edit Review
-                            </button>
-                        }
-                        else
-                        {
-                            <button class="edit-profile-btn"
-                                    id="btn-open-profile-review"
-                                    aria-label="Write a review for @Model.DisplayName"
-                                    data-action="open-profile-review"
-                                    data-reviewee-id="@Model.UserId"
-                                    data-reviewee-name="@Model.DisplayName">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                                Write a Review
-                            </button>
-                        }
                         <button class="edit-profile-btn invite-btn"
                                 id="btn-open-invite"
                                 aria-label="Invite @Model.DisplayName to an event"
@@ -210,7 +179,6 @@
                 <h2>Recent Activity History</h2>
             </div>
             <div class="activity-list">
-                @* This would normally be loaded from DB too, but keeping it static/mock for now as per plan focus *@
                 @foreach (var post in Model.post_history)
                 {
                     <div class="activity-card">
@@ -220,8 +188,24 @@
                         </div>
                         <div class="activity-card-details">
                             <p><i class="location-icon"></i> @post.Location</p>
-                            <p>Posted on: @post.PostedAt.ToString("MMM dd, yyyy")</p>
+                            <p>Activity date: @post.ActivityDate.ToString("MMM d, yyyy h:mm tt")</p>
                         </div>
+                        @if (Model.IsOwner && post.OwnerId != Model.UserId)
+                        {
+                            var ownerName = Model.ActivityOwnerNames.GetValueOrDefault(post.OwnerId ?? "", "Unknown User");
+                            <div class="activity-card-actions">
+                                <button class="btn-activity-review"
+                                        data-action="open-activity-review"
+                                        data-post-id="@post.Id"
+                                        data-reviewee-id="@post.OwnerId"
+                                        data-reviewee-name="@ownerName">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon" style="width:14px;height:14px;">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                    Review
+                                </button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -254,7 +238,7 @@
                             </div>
                             <div class="activity-card-details">
                                 <p><i class="location-icon"></i> @post.Location</p>
-                                <p>Expires: @post.ExpiresAt.ToString("MMM d, h:mm tt")</p>
+                                <p>Activity date: @post.ActivityDate.ToString("MMM d, yyyy h:mm tt")</p>
                             </div>
                         </div>
                     }
@@ -300,215 +284,6 @@
     <script src="~/js/profile.js" asp-append-version="true"></script>
     @if (!Model.IsOwner)
     {
-        <script>
-        (function () {
-            var revieweeId    = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.UserId)';
-            var revieweeName  = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.DisplayName)';
-            var isEditMode    = @(Model.HasReviewedByCurrentUser ? "true" : "false");
-            var selectedStars = 0;
-            var starLabels    = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
-
-            /* ── Create modal DOM ─────────────────────────────────────── */
-            var modal = document.createElement('div');
-            modal.id = 'profile-review-modal';
-            modal.className = 'modal-overlay';
-            modal.style.display = 'none';
-            modal.innerHTML = `
-                <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="profile-modal-title"><span id="profile-modal-action">${isEditMode ? 'Edit Review for' : 'Rate'}</span> <span id="profile-modal-reviewee-name"></span></h3>
-                        <button class="modal-close-btn" id="profile-modal-close" aria-label="Close">&times;</button>
-                    </div>
-
-                    <div class="star-picker" id="profile-star-picker">
-                        <span class="star-pick" data-value="1">★</span>
-                        <span class="star-pick" data-value="2">★</span>
-                        <span class="star-pick" data-value="3">★</span>
-                        <span class="star-pick" data-value="4">★</span>
-                        <span class="star-pick" data-value="5">★</span>
-                    </div>
-                    <p id="profile-star-label" class="star-label-text">Select a rating</p>
-
-                    <textarea id="profile-review-comment"
-                              class="review-textarea"
-                              placeholder="Leave a comment (optional)"></textarea>
-
-                    <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:0.88rem;color:#374151;">
-                        <input type="checkbox" id="profile-review-anonymous">
-                        Submit anonymously
-                    </label>
-
-                    <div class="modal-actions">
-                        <button class="btn-modal-cancel" id="profile-modal-cancel">Cancel</button>
-                        <button class="btn-modal-submit" id="profile-modal-submit">${isEditMode ? 'Update Review' : 'Submit Review'}</button>
-                    </div>
-
-                    <p id="profile-review-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>
-                </div>`;
-            // Set the reviewee name via textContent to avoid XSS
-            document.body.appendChild(modal);
-            document.getElementById('profile-modal-reviewee-name').textContent = revieweeName;
-
-            /* ── Open / close helpers ────────────────────────────────── */
-            function openModal() {
-                var openBtn = document.getElementById('btn-open-profile-review');
-                if (isEditMode && openBtn) {
-                    // Pre-fill with existing review data
-                    var existingRating    = parseInt(openBtn.dataset.existingRating) || 0;
-                    var existingComment   = openBtn.dataset.existingComment || '';
-                    var existingAnonymous = openBtn.dataset.existingAnonymous === 'true';
-                    selectedStars = existingRating;
-                    document.getElementById('profile-star-label').textContent = existingRating > 0 ? starLabels[existingRating] : 'Select a rating';
-                    document.getElementById('profile-review-comment').value = existingComment;
-                    document.getElementById('profile-review-anonymous').checked = existingAnonymous;
-                    highlightStars(existingRating);
-                } else {
-                    selectedStars = 0;
-                    document.getElementById('profile-star-label').textContent = 'Select a rating';
-                    document.getElementById('profile-review-comment').value = '';
-                    document.getElementById('profile-review-anonymous').checked = false;
-                    highlightStars(0);
-                }
-                document.getElementById('profile-review-feedback').textContent = '';
-                modal.style.display = 'flex';
-                setTimeout(function () { modal.style.opacity = '1'; }, 10);
-            }
-
-            function closeModal() {
-                modal.style.display = 'none';
-            }
-
-            /* ── Star helpers ────────────────────────────────────────── */
-            function highlightStars(count) {
-                modal.querySelectorAll('.star-pick').forEach(function (s, i) {
-                    s.style.color = i < count ? '#f59e0b' : '#d1d5db';
-                    s.classList.toggle('active', i < count);
-                });
-            }
-
-            function shakeStarPicker() {
-                var picker = document.getElementById('profile-star-picker');
-                picker.style.animation = 'none';
-                picker.offsetHeight; // force reflow
-                picker.style.animation = 'shake 0.3s ease';
-            }
-
-            /* ── Star events ─────────────────────────────────────────── */
-            modal.querySelectorAll('.star-pick').forEach(function (star) {
-                star.addEventListener('mouseover', function () {
-                    highlightStars(parseInt(star.dataset.value));
-                });
-                star.addEventListener('mouseout', function () {
-                    highlightStars(selectedStars);
-                });
-                star.addEventListener('click', function () {
-                    selectedStars = parseInt(star.dataset.value);
-                    highlightStars(selectedStars);
-                    document.getElementById('profile-star-label').textContent = starLabels[selectedStars];
-                });
-            });
-
-            /* ── Submit ──────────────────────────────────────────────── */
-            document.getElementById('profile-modal-submit').addEventListener('click', async function () {
-                if (selectedStars === 0) { shakeStarPicker(); return; }
-
-                var comment   = document.getElementById('profile-review-comment').value.trim();
-                var anonymous = document.getElementById('profile-review-anonymous').checked;
-                var token     = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
-                var submitBtn = document.getElementById('profile-modal-submit');
-                var feedback  = document.getElementById('profile-review-feedback');
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Submitting…';
-
-                try {
-                    var endpoint = isEditMode ? '/Review/Update' : '/Review/Submit';
-                    var body = new URLSearchParams({
-                        revieweeId:   revieweeId,
-                        revieweeName: revieweeName,
-                        rating:       selectedStars,
-                        comment:      comment,
-                        isAnonymous:  anonymous,
-                        __RequestVerificationToken: token
-                    });
-
-                    var resp = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: body
-                    });
-                    var result = await resp.json();
-
-                    if (result.success) {
-                        closeModal();
-                        submitBtn.disabled = false;
-                        if (!isEditMode) {
-                            // After a new review, switch to edit mode so the button reflects the new state
-                            isEditMode = true;
-                            var openBtn = document.getElementById('btn-open-profile-review');
-                            if (openBtn) {
-                                openBtn.dataset.existingRating    = selectedStars;
-                                openBtn.dataset.existingComment   = comment;
-                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
-                                openBtn.setAttribute('aria-label', 'Edit your review for ' + revieweeName);
-                                // Update button text node (the text node after the SVG icon)
-                                openBtn.childNodes.forEach(function(n) {
-                                    if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' Edit Review';
-                                });
-                                document.getElementById('profile-modal-action').textContent = 'Edit Review for';
-                                document.getElementById('profile-modal-submit').textContent = 'Update Review';
-                            }
-                        } else {
-                            submitBtn.textContent = 'Update Review';
-                            // Update the stored data for future opens
-                            var openBtn = document.getElementById('btn-open-profile-review');
-                            if (openBtn) {
-                                openBtn.dataset.existingRating    = selectedStars;
-                                openBtn.dataset.existingComment   = comment;
-                                openBtn.dataset.existingAnonymous = anonymous ? 'true' : 'false';
-                            }
-                        }
-                        showToast(isEditMode);
-                    } else {
-                        feedback.style.color = '#dc2626';
-                        feedback.textContent = result.error ?? 'Something went wrong.';
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
-                    }
-                } catch (e) {
-                    feedback.style.color = '#dc2626';
-                    feedback.textContent = 'Network error, please try again.';
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = isEditMode ? 'Update Review' : 'Submit Review';
-                }
-            });
-
-            /* ── Close listeners ─────────────────────────────────────── */
-            document.getElementById('profile-modal-close').addEventListener('click', closeModal);
-            document.getElementById('profile-modal-cancel').addEventListener('click', closeModal);
-            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-
-            /* ── Open button ─────────────────────────────────────────── */
-            var openBtn = document.getElementById('btn-open-profile-review');
-            if (openBtn) openBtn.addEventListener('click', openModal);
-
-            /* ── Toast ───────────────────────────────────────────────── */
-            function showToast(isEdit) {
-                var existing = document.getElementById('profile-toast');
-                if (existing) existing.remove();
-                var el = document.createElement('div');
-                el.id = 'profile-toast';
-                el.textContent = (isEdit ? 'Review updated for ' : 'Review submitted for ') + revieweeName + '!';
-                el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
-                    'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
-                    'font-size:0.88rem;font-weight:500;z-index:9999;' +
-                    'box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:fadeInUp 0.2s ease;';
-                document.body.appendChild(el);
-                setTimeout(function () { el.remove(); }, 3000);
-            }
-        }());
-        </script>
-
         <script>
         /* ── Invite to Event Modal ───────────────────────────────────────── */
         (function () {
@@ -691,5 +466,181 @@
         }());
         </script>
     }
-}
+    @if (Model.IsOwner)
+    {
+        <script>
+        /* ── Activity Review Modal (owner reviewing organizers of past activities) ── */
+        (function () {
+            var selectedStars  = 0;
+            var currentPostId  = 0;
+            var currentRevieweeId   = '';
+            var currentRevieweeName = '';
+            var starLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
+            /* ── Create modal DOM ─────────────────────────────────────── */
+            var modal = document.createElement('div');
+            modal.id = 'activity-review-modal';
+            modal.className = 'modal-overlay';
+            modal.style.display = 'none';
+            modal.innerHTML =
+                '<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="activity-modal-title">' +
+                    '<div class="modal-header">' +
+                        '<h3 class="modal-title" id="activity-modal-title">Rate <span id="activity-modal-reviewee-name"></span></h3>' +
+                        '<button class="modal-close-btn" id="activity-modal-close" aria-label="Close">&times;</button>' +
+                    '</div>' +
+                    '<div class="star-picker" id="activity-star-picker">' +
+                        '<span class="star-pick" data-value="1">★</span>' +
+                        '<span class="star-pick" data-value="2">★</span>' +
+                        '<span class="star-pick" data-value="3">★</span>' +
+                        '<span class="star-pick" data-value="4">★</span>' +
+                        '<span class="star-pick" data-value="5">★</span>' +
+                    '</div>' +
+                    '<p id="activity-star-label" class="star-label-text">Select a rating</p>' +
+                    '<textarea id="activity-review-comment" class="review-textarea" placeholder="Leave a comment (optional)"></textarea>' +
+                    '<label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:0.88rem;color:#374151;">' +
+                        '<input type="checkbox" id="activity-review-anonymous">' +
+                        'Submit anonymously' +
+                    '</label>' +
+                    '<div class="modal-actions">' +
+                        '<button class="btn-modal-cancel" id="activity-modal-cancel">Cancel</button>' +
+                        '<button class="btn-modal-submit" id="activity-modal-submit">Submit Review</button>' +
+                    '</div>' +
+                    '<p id="activity-review-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>' +
+                '</div>';
+            document.body.appendChild(modal);
+
+            /* ── Open / close helpers ────────────────────────────────── */
+            function openModal(btn) {
+                currentPostId       = btn.dataset.postId;
+                currentRevieweeId   = btn.dataset.revieweeId;
+                currentRevieweeName = btn.dataset.revieweeName;
+                document.getElementById('activity-modal-reviewee-name').textContent = currentRevieweeName;
+                selectedStars = 0;
+                document.getElementById('activity-star-label').textContent = 'Select a rating';
+                document.getElementById('activity-review-comment').value = '';
+                document.getElementById('activity-review-anonymous').checked = false;
+                document.getElementById('activity-review-feedback').textContent = '';
+                document.getElementById('activity-modal-submit').textContent = 'Submit Review';
+                document.getElementById('activity-modal-submit').disabled = false;
+                highlightStars(0);
+                modal.style.display = 'flex';
+                setTimeout(function () { modal.style.opacity = '1'; }, 10);
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+            }
+
+            /* ── Star helpers ────────────────────────────────────────── */
+            function highlightStars(count) {
+                modal.querySelectorAll('.star-pick').forEach(function (s, i) {
+                    s.style.color = i < count ? '#f59e0b' : '#d1d5db';
+                    s.classList.toggle('active', i < count);
+                });
+            }
+
+            function shakeStarPicker() {
+                var picker = document.getElementById('activity-star-picker');
+                picker.style.animation = 'none';
+                picker.offsetHeight;
+                picker.style.animation = 'shake 0.3s ease';
+            }
+
+            /* ── Star events ─────────────────────────────────────────── */
+            modal.querySelectorAll('.star-pick').forEach(function (star) {
+                star.addEventListener('mouseover', function () {
+                    highlightStars(parseInt(star.dataset.value));
+                });
+                star.addEventListener('mouseout', function () {
+                    highlightStars(selectedStars);
+                });
+                star.addEventListener('click', function () {
+                    selectedStars = parseInt(star.dataset.value);
+                    highlightStars(selectedStars);
+                    document.getElementById('activity-star-label').textContent = starLabels[selectedStars];
+                });
+            });
+
+            /* ── Submit ──────────────────────────────────────────────── */
+            document.getElementById('activity-modal-submit').addEventListener('click', async function () {
+                if (selectedStars === 0) { shakeStarPicker(); return; }
+
+                var comment   = document.getElementById('activity-review-comment').value.trim();
+                var anonymous = document.getElementById('activity-review-anonymous').checked;
+                var token     = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+                var submitBtn = document.getElementById('activity-modal-submit');
+                var feedback  = document.getElementById('activity-review-feedback');
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting…';
+
+                try {
+                    var body = new URLSearchParams({
+                        postId:       currentPostId,
+                        revieweeId:   currentRevieweeId,
+                        revieweeName: currentRevieweeName,
+                        rating:       selectedStars,
+                        comment:      comment,
+                        isAnonymous:  anonymous,
+                        __RequestVerificationToken: token
+                    });
+
+                    var resp = await fetch('/Review/Submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: body
+                    });
+                    var result = await resp.json();
+
+                    if (result.success) {
+                        closeModal();
+                        /* Disable the button for this activity so it cannot be clicked again */
+                        var openBtn = document.querySelector('.btn-activity-review[data-post-id="' + currentPostId + '"]');
+                        if (openBtn) {
+                            openBtn.disabled = true;
+                            openBtn.textContent = 'Reviewed';
+                        }
+                        showToast(currentRevieweeName);
+                    } else {
+                        feedback.style.color = '#dc2626';
+                        feedback.textContent = result.error ?? 'Something went wrong.';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Review';
+                    }
+                } catch (e) {
+                    feedback.style.color = '#dc2626';
+                    feedback.textContent = 'Network error, please try again.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Review';
+                }
+            });
+
+            /* ── Close listeners ─────────────────────────────────────── */
+            document.getElementById('activity-modal-close').addEventListener('click', closeModal);
+            document.getElementById('activity-modal-cancel').addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+            /* ── Attach to all activity review buttons ───────────────── */
+            document.querySelectorAll('.btn-activity-review').forEach(function (btn) {
+                btn.addEventListener('click', function () { openModal(btn); });
+            });
+
+            /* ── Toast ───────────────────────────────────────────────── */
+            function showToast(name) {
+                var existing = document.getElementById('activity-review-toast');
+                if (existing) existing.remove();
+                var el = document.createElement('div');
+                el.id = 'activity-review-toast';
+                el.textContent = 'Review submitted for ' + name + '!';
+                el.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+                    'background:#111827;color:#fff;padding:10px 20px;border-radius:8px;' +
+                    'font-size:0.88rem;font-weight:500;z-index:9999;' +
+                    'box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:fadeInUp 0.2s ease;';
+                document.body.appendChild(el);
+                setTimeout(function () { el.remove(); }, 3000);
+            }
+        }());
+        </script>
+    }
+
+}

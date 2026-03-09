@@ -50,4 +50,7 @@ public class ProfileViewModel
 
     /// <summary>Post IDs for which the current user has already sent a pending invitation to this profile user.</summary>
     public HashSet<int> AlreadyInvitedPostIds { get; set; } = new HashSet<int>();
+
+    /// <summary>Maps activity owner user IDs to their display names, used to show who organised each history activity.</summary>
+    public Dictionary<string, string> ActivityOwnerNames { get; set; } = new Dictionary<string, string>();
 }
