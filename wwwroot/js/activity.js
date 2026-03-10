@@ -347,8 +347,13 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        showToast('SUCCESS', 'Application submitted! The organizer will review it.');
-                        setState('pending');
+                        if (result.accepted) {
+                            showToast('SUCCESS', 'You have been instantly accepted! Welcome to the activity.');
+                            setState('accepted');
+                        } else {
+                            showToast('SUCCESS', 'Application submitted! The organizer will review it.');
+                            setState('pending');
+                        }
                     } else {
                         showToast('ERROR', result.error ?? 'Something went wrong');
                         submitBtn.disabled = false;

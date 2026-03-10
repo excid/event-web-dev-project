@@ -57,19 +57,60 @@ public class EventController : Controller
         if (alreadyApplied)
             return Json(new { success = false, error = "You have already applied to this post" });
 
+        bool isFifo = post.ApplicationMode == "First-Come, First-Served";
+
+        if (isFifo && post.CurrentMembers >= post.MaxMembers)
+            return Json(new { success = false, error = "This activity is already full" });
+
+        bool instantlyAccepted = isFifo;
+
         var application = new PostApplication
         {
             PostId        = model.PostId,
             ApplicantId   = userId,
             ApplicantName = displayName,
             Message       = model.Message,
-            Status        = "Pending",
+            Status        = instantlyAccepted ? "Accepted" : "Pending",
             AppliedAt     = DateTime.Now
         };
 
         _db.PostApplications.Add(application);
+
+        if (instantlyAccepted)
+            post.CurrentMembers++;
+
+        // Notify the post owner
+        if (post.OwnerId != null && post.OwnerId != userId)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId    = post.OwnerId,
+                Type      = "ApplicationReceived",
+                Title     = instantlyAccepted ? "New Member Joined" : "New Application",
+                Message   = instantlyAccepted
+                    ? $"{displayName} automatically joined \"{post.Title}\" (First-Come, First-Served)."
+                    : $"{displayName} applied to join \"{post.Title}\".",
+                ActionUrl = $"/ActivityPost/Index/{post.Id}",
+                CreatedAt = DateTime.Now
+            });
+        }
+
+        // If instantly accepted, notify the applicant
+        if (instantlyAccepted && userId != null)
+        {
+            _db.Notifications.Add(new Notification
+            {
+                UserId    = userId,
+                Type      = "ApplicationAccepted",
+                Title     = "Application Accepted",
+                Message   = $"You have been automatically accepted to join \"{post.Title}\"!",
+                ActionUrl = "/MyBoard/Index",
+                CreatedAt = DateTime.Now
+            });
+        }
+
         await _db.SaveChangesAsync();
 
-        return Json(new { success = true });
+        return Json(new { success = true, accepted = instantlyAccepted });
     }
 }
