@@ -1,6 +1,4 @@
-// myboard.js
 
-// ── Main Tab Switching ──────────────────────────────────────────
 (function () {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabPanels = document.querySelectorAll('.tab-panel');
@@ -90,7 +88,6 @@ function confirmModalAction() {
     closeConfirmModal();
 }
 
-// Close modal on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('confirm-modal');
     if (modal) {
@@ -105,14 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ── Invitation Accept / Decline ─────────────────────────────────
 async function handleInvitation(btn, action) {
     const card = btn.closest('.invitation-card');
     const invitationId = card?.dataset.invitationId;
     const actionsRow = card.querySelector('.invitation-card__actions');
     const statusBadge = card.querySelector('.status-badge');
 
-    // Disable buttons while submitting
     card.querySelectorAll('button').forEach(b => b.disabled = true);
 
     try {
@@ -137,10 +132,10 @@ async function handleInvitation(btn, action) {
         return;
     }
 
-    // Replace action buttons with a notice
+    
     if (actionsRow) actionsRow.remove();
 
-    // Update status badge
+    
     if (statusBadge) {
         statusBadge.className = 'status-badge';
         if (action === 'accept') {
@@ -156,7 +151,6 @@ async function handleInvitation(btn, action) {
         }
     }
 
-    // Append notice
     const notice = document.createElement('div');
     if (action === 'accept') {
         notice.className = 'invitation-card__notice status-badge--accepted';
@@ -168,7 +162,6 @@ async function handleInvitation(btn, action) {
     notice.style.animation = 'fadeIn 0.25s ease';
     card.appendChild(notice);
 
-    // Update pending count in subtab stats (visual only)
     updateInvitationCounts(action);
 }
 
