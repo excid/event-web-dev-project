@@ -88,13 +88,20 @@ else
                 </div>
             </div>
 
-            @if (Model.Status == "Open")
+            @if (Model.Status == "Open" || Model.Status == "Expired")
             {
                 <button class="btn-close-post"
                         data-action="close-post"
                         data-post-id="@Model.Id">
                     <span data-icon="close"></span>
-                    Close Post
+                    @if (Model.Status == "Open")
+                    {
+                        @:Close Post
+                    }
+                    else
+                    {
+                        @:Delete Post
+                    }
                 </button>
             }
 
