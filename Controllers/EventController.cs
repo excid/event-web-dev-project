@@ -19,6 +19,7 @@ public class EventController : Controller
     {
         var post = await _db.ActivityPosts
             .Include(p => p.Applications)
+            .Include(p => p.Owner)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (post == null) return NotFound();

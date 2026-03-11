@@ -43,6 +43,8 @@ public class ActivityPost
 
     public string? OwnerId { get; set; }
 
+    public ApplicationUser? Owner { get; set; }
+
     // --- Soft Delete ---
     // When true, this post is hidden from all listings.
     // It stays in the database so you can recover it if needed.
