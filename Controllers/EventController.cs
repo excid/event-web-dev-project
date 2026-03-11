@@ -94,7 +94,6 @@ public class EventController : Controller
         if (post.CurrentMembers >= post.MaxMembers)
         {
             post.Status = "Closed";
-            post.IsDeleted = true; 
 
             if (post.OwnerId != null)
             {

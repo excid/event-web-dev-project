@@ -1,0 +1,112 @@
+@model List<event_web_dev_project.Models.UserCardModel>
+@{ ViewData["Title"] = "People"; }
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/people.css" asp-append-version="true" />
+}
+
+<div class="people-page">
+    <div class="people-header">
+        <h1 class="people-title">People</h1>
+        <p class="people-subtitle">Find and connect with members on the platform</p>
+    </div>
+
+    <div class="people-search-bar">
+        <input type="text" id="people-search"
+               placeholder="Search by name, tags, or interests..."
+               autocomplete="off" />
+    </div>
+
+    <div class="people-grid" id="people-grid">
+        @foreach (var user in Model)
+        {
+            @* ProfileSlug may be null for users created before the slug feature —
+               fall back to Profile/Index (own profile) which lazily generates the slug *@
+            var profileUrl = user.ProfileSlug != null
+                ? Url.Action("Index", "Profile", new { username = user.ProfileSlug })
+                : "#";
+
+            <a class="user-card" href="@profileUrl">
+                <div class="user-avatar">
+                    @if (!string.IsNullOrEmpty(user.AvatarUrl))
+                    {
+                        <img src="@user.AvatarUrl" alt="@user.DisplayName" />
+                    }
+                    else
+                    {
+                        <div class="avatar-placeholder">
+                            @user.DisplayName.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                </div>
+                <div class="user-info">
+                    <div class="user-name">@user.DisplayName</div>
+                    @if (!string.IsNullOrEmpty(user.About))
+                    {
+                        <div class="user-about">@user.About</div>
+                    }
+                    @if (!string.IsNullOrEmpty(user.Tags))
+                    {
+                        <div class="user-tags">
+                            @foreach (var tag in user.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <span class="user-tag">@tag.Trim()</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+
+    <div id="no-results" style="display:none; text-align:center; padding:60px; color:#6b7280;">
+        No users found matching your search.
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('people-search');
+        const grid        = document.getElementById('people-grid');
+        const noResults   = document.getElementById('no-results');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                const q = searchInput.value.trim();
+
+                const res   = await fetch(`/People/Search?q=${encodeURIComponent(q)}`);
+                const users = await res.json();
+
+                if (users.length === 0) {
+                    grid.innerHTML = '';
+                    noResults.style.display = 'block';
+                    return;
+                }
+
+                noResults.style.display = 'none';
+                grid.innerHTML = users.map(u => {
+                    const href = u.profileSlug
+                        ? `/Profile/Index?username=${encodeURIComponent(u.profileSlug)}`
+                        : '#';
+                    return `
+                    <a class="user-card" href="${href}">
+                        <div class="user-avatar">
+                            ${u.avatarUrl
+                                ? `<img src="${u.avatarUrl}" alt="${u.displayName}" />`
+                                : `<div class="avatar-placeholder">${u.displayName.charAt(0).toUpperCase()}</div>`
+                            }
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">${u.displayName}</div>
+                            ${u.about ? `<div class="user-about">${u.about}</div>` : ''}
+                            ${u.tags ? `<div class="user-tags">${u.tags.split(',').map(t =>
+                                `<span class="user-tag">${t.trim()}</span>`).join('')}</div>` : ''}
+                        </div>
+                    </a>`;
+                }).join('');
+            }, 300);
+        });
+    </script>
+}

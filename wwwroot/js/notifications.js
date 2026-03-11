@@ -190,7 +190,7 @@
         const allToasts = document.querySelectorAll('.notif-toast');
         allToasts.forEach((t, i) => {
             const idx = allToasts.length - 1 - i;
-            t.style.bottom = `${92 + idx * 76}px`;
+            t.style.bottom = `${92 + idx * 80}px`;
         });
 
         setTimeout(() => {
@@ -202,9 +202,9 @@
                 // Re-stack remaining toasts
                 document.querySelectorAll('.notif-toast').forEach((t, i, arr) => {
                     const idx = arr.length - 1 - i;
-                    t.style.bottom = `${92 + idx * 76}px`;
+                    t.style.bottom = `${92 + idx * 80}px`;
                 });
-            }, 300);
+            }, 300);WScript
         }, 4000);
     }
 

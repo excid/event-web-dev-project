@@ -189,13 +189,13 @@
             accepted: {
                 cls: 'banner-accepted',
                 icon: iconCheck(),
-                title: '✓ Application Accepted',
+                title: 'Application Accepted',
                 body: 'Congratulations! Your application has been accepted. The organizer will contact you with more details about the activity.',
             },
             rejected: {
                 cls: 'banner-rejected',
                 icon: iconX(),
-                title: '✗ Application Rejected',
+                title: 'Application Rejected',
                 body: "Unfortunately, your application was not accepted this time. Don't be discouraged – there are many other activities to join!",
             },
         };
@@ -364,6 +364,7 @@
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit Application';
                 }
+                location.reload();
             });
         }
 

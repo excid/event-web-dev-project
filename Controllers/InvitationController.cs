@@ -119,6 +119,46 @@ public class InvitationController : Controller
             CreatedAt = DateTime.Now
         });
 
+        post = await _db.ActivityPosts.FindAsync(invitation.PostId);
+        if (post != null && action == "accept")
+        {
+            var alreadyApplied = await _db.PostApplications
+                .AnyAsync(a => a.PostId == post.Id && a.ApplicantId == currentUserId);
+
+            if (!alreadyApplied)
+            {
+                _db.PostApplications.Add(new PostApplication
+                {
+                    PostId        = post.Id,
+                    ApplicantId   = currentUserId,
+                    ApplicantName = responderName,
+                    Message       = $"Joined via invitation: {invitation.Message}",
+                    Status        = "Accepted",
+                    AppliedAt     = DateTime.Now
+                });
+
+                post.CurrentMembers++;
+
+                if (post.CurrentMembers >= post.MaxMembers)
+                {
+                    post.Status = "Closed";
+
+                    if (post.OwnerId != null)
+                    {
+                        _db.Notifications.Add(new Notification
+                        {
+                            UserId    = post.OwnerId,
+                            Type      = "PostFull",
+                            Title     = "Activity is Now Full",
+                            Message   = $"Your post \"{post.Title}\" has reached its member limit and has been automatically closed.",
+                            ActionUrl = $"/ActivityPost/Index/{post.Id}",
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+                }
+            }
+        }
+
         await _db.SaveChangesAsync();
 
         return Json(new { success = true, status = invitation.Status });
