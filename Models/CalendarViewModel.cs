@@ -35,7 +35,7 @@ namespace event_web_dev_project.Models
             "dining" => "cat-dining",
             "social" => "cat-social",
             "shopping" => "cat-shopping",
-            "study" => "cat-study",
+            "studying" => "cat-study",
             _ => "cat-others"
         };
     }
