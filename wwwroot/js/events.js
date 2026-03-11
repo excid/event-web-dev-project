@@ -152,10 +152,12 @@ const EventBoard = (() => {
         const postId = btn.dataset.postId;
         const ok = await confirm('Close this post? It will be hidden from the board and moved to the archive.', 'Close Post', true);
         if (!ok) return;
+        
+        const res = await post('/ActivityPost/ClosePost', { id: postId });
 
         setLoading(btn, true);
         try {
-            const res = await post('/ActivityPost/ClosePost', { id: postId });
+            
             if (res.success) {
                 // Swap status badge to Closed
                 const statusBadge = document.querySelector('.badge-open');

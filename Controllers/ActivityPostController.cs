@@ -78,8 +78,16 @@ public class ActivityPostController : Controller
         if (post.OwnerId != currentUserId)
             return Json(new { success = false, error = "Unauthorized" });
 
-        post.Status = "Closed";
-        post.DeletedAt = DateTime.Now;
+
+        if (post.Status != "Closed")
+        {
+            post.Status = "Closed";
+        }
+        else
+        {
+            post.IsDeleted = true;
+            post.DeletedAt = DateTime.Now;
+        }
         await _db.SaveChangesAsync();
 
         return Json(new { success = true });
