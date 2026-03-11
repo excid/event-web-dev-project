@@ -147,7 +147,6 @@ public class ProfileController : Controller
             HasReviewedByCurrentUser    = existingReviewByCurrentUser != null,
             ExistingReviewByCurrentUser = existingReviewByCurrentUser,
 
-            // Compute stats from already-loaded collections
             OrganizedCount = postHistory.Count(p => p.OwnerId == profileUserId)
                            + upcomingActivities.Count(p => p.OwnerId == profileUserId),
 
@@ -163,7 +162,6 @@ public class ProfileController : Controller
         return View(viewModel);
     }
 
-    // POST /Profile/UpdateProfile
     
     [HttpPost]
     [ValidateAntiForgeryToken]

@@ -20,7 +20,6 @@ public class ReviewController : Controller
         _userManager = userManager;
     }
 
-    // GET /Review/Create?revieweeId=<id>
     public async Task<IActionResult> Create(string revieweeId)
     {
         if (string.IsNullOrEmpty(revieweeId))
@@ -41,7 +40,6 @@ public class ReviewController : Controller
         return View();
     }
 
-    // POST /Review/Submit
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit(int? postId, string revieweeId, string revieweeName, int rating, string? comment, bool isAnonymous = false)
@@ -53,16 +51,13 @@ public class ReviewController : Controller
         if (reviewerId == null)
             return Json(new { success = false, error = "Not authenticated" });
 
-        // Prevent self-reviews
         if (reviewerId == revieweeId)
             return Json(new { success = false, error = "You cannot review yourself" });
 
-        // postId = 0 is a sentinel meaning this is a direct profile review (not tied to a specific post)
         int resolvedPostId = postId ?? 0;
 
         if (resolvedPostId != 0)
         {
-            // Check the post exists
             var post = await _db.ActivityPosts.FindAsync(resolvedPostId);
             if (post == null)
                 return Json(new { success = false, error = "Post not found" });

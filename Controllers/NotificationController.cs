@@ -18,8 +18,6 @@ public class NotificationController : Controller
         _db = db;
     }
 
-    // GET /Notification/GetUnread
-    // Returns the 20 most recent unread notifications for the current user as JSON.
     [HttpGet]
     public async Task<IActionResult> GetUnread()
     {
@@ -45,7 +43,6 @@ public class NotificationController : Controller
         return Json(notifications);
     }
 
-    // POST /Notification/MarkRead
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkRead(int id)
@@ -64,7 +61,6 @@ public class NotificationController : Controller
         return Json(new { success = true });
     }
 
-    // POST /Notification/MarkAllRead
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAllRead()

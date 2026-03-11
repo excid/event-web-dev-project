@@ -8,7 +8,7 @@ using event_web_dev_project.Models;
 
 namespace event_web_dev_project.Controllers;
 
-[Authorize]  // must be logged in to see MyBoard
+[Authorize]  
 public class MyBoardController : Controller
 {
     private readonly AppDbContext _db;
@@ -24,7 +24,6 @@ public class MyBoardController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        // ── Tab 1: My Posts ───────────────────────────────────────────────
         var myPosts = await _db.ActivityPosts
             .Where(p => p.OwnerId == userId && !p.IsDeleted)
             .Include(p => p.Applications)
@@ -46,12 +45,10 @@ public class MyBoardController : Controller
                 ExpirationDate  = p.ExpiresAt,
                 Author          = p.PostedBy,
                 NumApplication  = p.Applications.Count,
-                PostId          = p.Id   // needed for "Manage" link
+                PostId          = p.Id   
             }).ToList()
         };
 
-        // ── Tab 2: My Applications ────────────────────────────────────────
-        // Applications the logged-in user submitted (matched by ApplicantId)
         var myApplications = await _db.PostApplications
             .Where(a => a.ApplicantId == userId)
             .Include(a => a.ActivityPost)
@@ -70,7 +67,6 @@ public class MyBoardController : Controller
             }).ToList()
         };
 
-        // ── Tab 3: Invitations ────────────────────────────────────────────
         var sentInvitations = await _db.Invitations
             .Where(i => i.SenderId == userId)
             .Include(i => i.Receiver)
