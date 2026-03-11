@@ -88,22 +88,21 @@ else
                 </div>
             </div>
 
-            @if (Model.Status == "Open" || Model.Status == "Expired")
-            {
-                <button class="btn-close-post"
-                        data-action="close-post"
-                        data-post-id="@Model.Id">
-                    <span data-icon="close"></span>
-                    @if (Model.Status == "Open")
-                    {
-                        @:Close Post
-                    }
-                    else
-                    {
-                        @:Delete Post
-                    }
-                </button>
-            }
+           
+            <button class="btn-close-post"
+                    data-action="close-post"
+                    data-post-id="@Model.Id">
+                <span data-icon="close"></span>
+                @if (Model.Status == "Open")
+                {
+                    @:Close Post
+                }
+                else          
+                {
+                    @:Delete Post
+                }
+
+            </button>
 
             @* ===== Review Section — only visible when post is Closed ===== *@
             @if (Model.Status == "Closed")

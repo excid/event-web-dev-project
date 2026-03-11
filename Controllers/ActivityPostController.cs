@@ -79,7 +79,6 @@ public class ActivityPostController : Controller
             return Json(new { success = false, error = "Unauthorized" });
 
         post.Status = "Closed";
-        post.IsDeleted = true;
         post.DeletedAt = DateTime.Now;
         await _db.SaveChangesAsync();
 
@@ -97,6 +96,13 @@ public class ActivityPostController : Controller
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (post.OwnerId != currentUserId)
             return Json(new { success = false, error = "Unauthorized" });
+        
+        if (post.ExpiresAt <= DateTime.Now)
+            return Json(new { success = false, error = "Cannot restore an expired post" });
+
+        if (post.CurrentMembers >= post.MaxMembers)
+            return Json(new { success = false, error = "Cannot restore a post that is already full" });
+
 
         post.Status = "Open";
         post.IsDeleted = false;
