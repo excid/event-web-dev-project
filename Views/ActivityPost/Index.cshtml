@@ -106,9 +106,20 @@ else
             @* ===== Review Section — only visible when post is Closed ===== *@
             @if (Model.Status == "Closed")
             {
+                var activityDateFormatted = Model.ActivityDate.ToString("MMM d, yyyy h:mm tt");
+                var isBeforeActivity = Model.ActivityDate > DateTime.Now;
                 <div class="review-section">
                     <h3 class="review-section-title">⭐ Leave Reviews</h3>
-                    <p class="review-section-subtitle">Rate Participants</p>
+                    <p class="review-section-subtitle">
+                        @if (isBeforeActivity)
+                        {
+                            @:Reviews will be available after @activityDateFormatted
+                        }
+                        else
+                        {
+                            @:Rate Participants
+                        }
+                    </p>
 
                     <div class="review-list">
                         @* Loop real accepted applications *@
@@ -122,7 +133,8 @@ else
                                 <button class="btn-rate"
                                         data-reviewee-name="@app.ApplicantName"
                                         data-reviewee-id="@app.ApplicantId"
-                                        data-post-id="@Model.Id">
+                                        data-post-id="@Model.Id"
+                                        @(isBeforeActivity ? $"disabled title=\"Reviews open after the activity date: {activityDateFormatted}\"" : "")>
                                     ⭐ Rate
                                 </button>
                             </div>
@@ -349,6 +361,8 @@ else
         /* ── Attach to all Rate buttons ───────────────────────────────── */
         document.querySelectorAll('.btn-rate').forEach(function (btn) {
             btn.addEventListener('click', function () {
+                if (btn.disabled) return;
+                // Extra guard for defense-in-depth in case the disabled attribute is removed externally
                 if (!activityPassed) {
                     EventBoard.toast('Reviews are only available after the activity date.', 'error');
                     return;
