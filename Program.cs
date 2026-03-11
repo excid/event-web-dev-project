@@ -7,7 +7,6 @@ using event_web_dev_project.Models;
 using event_web_dev_project.Services;
 using Microsoft.AspNetCore.DataProtection;
 
-// Add this at the very top of Program.cs before anything else
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Fix 1: EnableRetryOnFailure — stops the app from crashing if SQL Server
-// isn't fully ready yet when the app starts (common in Docker)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -49,8 +46,6 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
-// Fix 2: Auto-migrate on startup — creates the database and applies all
-// migrations automatically. No manual "dotnet ef database update" needed.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -96,7 +91,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // ORDER MATTERS — Authentication must come before Authorization
-app.UseAuthentication();  // ← this was missing from your original file!
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
