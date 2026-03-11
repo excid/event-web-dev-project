@@ -388,9 +388,7 @@ reviewStyle.textContent = `
 `;
 document.head.appendChild(reviewStyle);
 
-// Hook into the existing EventBoard click delegation
-// We extend the switch statement by patching the init
-const _originalInit = EventBoard.init;
+// ─── Review Modal button actions ─────────────────────────────────────────────
 document.addEventListener('click', e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
@@ -399,10 +397,14 @@ document.addEventListener('click', e => {
         case 'close-review-modal':  ReviewModal.close();           break;
         case 'submit-review':       ReviewModal.submit();          break;
     }
-    // Star picker clicks
-    if (btn.classList.contains('star-pick')) {
-        ReviewModal.handleStarClick(btn);
-    }
+});
+
+// ─── Star picker clicks ───────────────────────────────────────────────────────
+// Handled in a separate listener because stars use .star-pick class, not data-action
+document.addEventListener('click', e => {
+    const star = e.target.closest('.star-pick');
+    if (!star) return;
+    ReviewModal.handleStarClick(star);
 });
 
 // Star hover effect
