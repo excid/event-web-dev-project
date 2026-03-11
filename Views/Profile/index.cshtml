@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 @if (Model.IsOwner) {
-                    <button class="edit-profile-btn" id="btn-edit-start">
+                    <button class="btn-base btn-primary edit-profile-btn" id="btn-edit-start">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -57,7 +57,7 @@
                 else
                 {
                     <div class="profile-actions">
-                        <button class="edit-profile-btn invite-btn"
+                        <button class="btn-base btn-primary edit-profile-btn invite-btn"
                                 id="btn-open-invite"
                                 aria-label="Invite @Model.DisplayName to an event"
                                 data-receiver-id="@Model.UserId"
@@ -130,8 +130,8 @@
                         <p class="email">@Model.Email <span class="badge-lock">(Read-only)</span></p>
                     </div>
                     <div class="edit-actions">
-                        <button type="submit" class="btn-save" id="btn-edit-save-real">Save Changes</button>
-                        <button type="button" class="btn-cancel-edit" id="btn-edit-cancel">Cancel</button>
+                        <button type="submit" class="btn-base btn-primary btn-save" id="btn-edit-save-real">Save Changes</button>
+                        <button type="button" class="btn-base btn-outline btn-cancel-edit" id="btn-edit-cancel">Cancel</button>
                     </div>
                 </div>
 
@@ -148,7 +148,7 @@
                             </div>
                             <div class="tag-input-group">
                                 <input type="text" id="input-new-tag" placeholder="Add a tag..." maxlength="20">
-                                <button type="button" id="btn-add-tag" class="btn-add">Add</button>
+                                <button type="button" id="btn-add-tag" class="btn-base btn-primary btn-add">Add</button>
                             </div>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                         {
                             var ownerName = Model.ActivityOwnerNames.GetValueOrDefault(post.OwnerId ?? "", "Unknown User");
                             <div class="activity-card-actions">
-                                <button class="btn-activity-review"
+                                    <button class="btn-base btn-outline btn-activity-review"
                                         data-action="open-activity-review"
                                         data-post-id="@post.Id"
                                         data-reviewee-id="@post.OwnerId"
@@ -319,8 +319,8 @@
                         '<textarea id="invite-message" class="review-textarea" placeholder="Add a personal message..." rows="3"></textarea>' +
                     '</div>' +
                     '<div class="modal-actions">' +
-                        '<button class="btn-modal-cancel" id="invite-modal-cancel">Cancel</button>' +
-                        '<button class="btn-modal-submit" id="invite-modal-submit">Send Invitation</button>' +
+                        '<button class="btn-base btn-outline btn-modal-cancel" id="invite-modal-cancel">Cancel</button>' +
+                        '<button class="btn-base btn-primary btn-modal-submit" id="invite-modal-submit">Send Invitation</button>' +
                     '</div>' +
                     '<p id="invite-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>' +
                 '</div>';
@@ -502,8 +502,8 @@
                         'Submit anonymously' +
                     '</label>' +
                     '<div class="modal-actions">' +
-                        '<button class="btn-modal-cancel" id="activity-modal-cancel">Cancel</button>' +
-                        '<button class="btn-modal-submit" id="activity-modal-submit">Submit Review</button>' +
+                        '<button class="btn-base btn-outline btn-modal-cancel" id="activity-modal-cancel">Cancel</button>' +
+                        '<button class="btn-base btn-primary btn-modal-submit" id="activity-modal-submit">Submit Review</button>' +
                     '</div>' +
                     '<p id="activity-review-feedback" style="text-align:center;font-size:0.85rem;margin-top:10px;"></p>' +
                 '</div>';
