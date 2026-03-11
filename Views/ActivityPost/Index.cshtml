@@ -112,6 +112,9 @@ else
 
                     <div class="review-list">
                         @* Loop real accepted applications *@
+                        @{
+                            bool activityPassed = ViewBag.ActivityDatePassed == true;
+                        }
                         @foreach (var app in Model.Applications.Where(a => a.Status == "Accepted"))
                         {
                             <div class="review-participant-row">
@@ -119,12 +122,23 @@ else
                                     <div class="review-participant-name">@app.ApplicantName</div>
                                     <div class="review-participant-label">Participant</div>
                                 </div>
-                                <button class="btn-rate"
-                                        data-reviewee-name="@app.ApplicantName"
-                                        data-reviewee-id="@app.ApplicantId"
-                                        data-post-id="@Model.Id">
-                                    ⭐ Rate
-                                </button>
+                                @if (activityPassed)
+                                {
+                                    <button class="btn-rate"
+                                            data-reviewee-name="@app.ApplicantName"
+                                            data-reviewee-id="@app.ApplicantId"
+                                            data-post-id="@Model.Id">
+                                        ⭐ Rate
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn-rate btn-rate-locked"
+                                            disabled
+                                            title="Available after @Model.ActivityDate.ToString("MMM d, yyyy h:mm tt")">
+                                        🔒 Rate
+                                    </button>
+                                }
                             </div>
                         }
                     </div>
@@ -344,7 +358,7 @@ else
         modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
 
         /* ── Attach to all Rate buttons ───────────────────────────────── */
-        document.querySelectorAll('.btn-rate').forEach(function (btn) {
+        document.querySelectorAll('.btn-rate:not([disabled])').forEach(function (btn) {
             btn.addEventListener('click', function () { openModal(btn); });
         });
     }());

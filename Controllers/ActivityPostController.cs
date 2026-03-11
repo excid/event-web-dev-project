@@ -49,6 +49,7 @@ public class ActivityPostController : Controller
             .FirstOrDefaultAsync();
         ViewBag.OwnerUsername = ownerUsername;
         ViewBag.AllPosts = allPosts;
+        ViewBag.ActivityDatePassed = selectedPost.ActivityDate <= DateTime.Now;
         return View(selectedPost);
     }
 

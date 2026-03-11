@@ -387,6 +387,11 @@
 
 .btn-rate:hover { background: #2563eb; }
 
+.btn-rate-locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .btn-rate-done {
     font-size: 0.84rem;
     color: #16a34a;
