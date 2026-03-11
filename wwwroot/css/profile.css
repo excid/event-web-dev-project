@@ -194,7 +194,7 @@
 
 .interest-chip.social {
     background: var(--bg-social);
-    color: var(--bg-social);
+    color: var(--color-social);
 }
 
 /* Profile Footer / Toggle */
