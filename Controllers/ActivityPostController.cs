@@ -60,6 +60,7 @@ public class ActivityPostController : Controller
         // Only show the logged-in user's own archived posts
         var archivedPosts = await _db.ActivityPosts
             .Where(p => p.IsDeleted && p.OwnerId == currentUserId)
+            .Include(p => p.Applications)
             .OrderByDescending(p => p.DeletedAt)
             .ToListAsync();
 

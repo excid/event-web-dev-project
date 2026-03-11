@@ -94,7 +94,6 @@ public class EventController : Controller
         if (post.CurrentMembers >= post.MaxMembers)
         {
             post.Status = "Closed";
-            post.IsDeleted = true; // Soft delete the post when it's closed
 
             // 🔔 Notify the post OWNER that the activity is full and auto-closed
             if (post.OwnerId != null)

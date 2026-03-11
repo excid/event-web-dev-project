@@ -390,16 +390,20 @@ document.head.appendChild(reviewStyle);
 // We extend the switch statement by patching the init
 const _originalInit = EventBoard.init;
 document.addEventListener('click', e => {
+    // Star picker clicks — handled before the data-action check because .star-pick
+    // elements carry no data-action attribute and would cause an early return below.
+    const star = e.target.closest('.star-pick');
+    if (star) {
+        ReviewModal.handleStarClick(star);
+        return;
+    }
+
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     switch (btn.dataset.action) {
         case 'open-review':         ReviewModal.open(btn);         break;
         case 'close-review-modal':  ReviewModal.close();           break;
         case 'submit-review':       ReviewModal.submit();          break;
-    }
-    // Star picker clicks
-    if (btn.classList.contains('star-pick')) {
-        ReviewModal.handleStarClick(btn);
     }
 });
 
