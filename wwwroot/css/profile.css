@@ -613,6 +613,7 @@
     .btn-cancel-edit {
         width: 100%;
     }
+
     .edit-profile-btn {
         padding: 0.4rem 0.6rem;
         font-size: 0.8rem;
@@ -639,6 +640,7 @@
         flex-wrap: wrap;
     }
 }
+
 /* Modal specific styles for profile page */
 .invite-modal-subtitle {
     font-size: 0.9rem;
