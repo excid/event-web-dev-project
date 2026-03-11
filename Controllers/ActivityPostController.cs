@@ -42,12 +42,6 @@ public class ActivityPostController : Controller
             .OrderBy(a => a.AppliedAt)
             .ToListAsync();
 
-        // Pass owner's username slug for profile link
-        var ownerUsername = await _db.Users
-            .Where(u => u.Id == currentUserId)
-            .Select(u => u.ProfileSlug)
-            .FirstOrDefaultAsync();
-        ViewBag.OwnerUsername = ownerUsername;
         ViewBag.AllPosts = allPosts;
         return View(selectedPost);
     }

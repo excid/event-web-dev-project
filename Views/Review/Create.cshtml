@@ -1,12 +1,8 @@
 @{
     ViewData["Title"] = "Write a Review";
-    var revieweeId       = (string)ViewBag.RevieweeId;
-    var revieweeUsername = (string?)ViewBag.RevieweeUsername;
-    var revieweeName     = (string)ViewBag.RevieweeName;
-    var avatarUrl        = (string?)ViewBag.RevieweeAvatarUrl;
-    var profileUrl       = revieweeUsername != null
-        ? "/Profile/Index?username=" + Uri.EscapeDataString(revieweeUsername)
-        : "/Profile/Index";
+    var revieweeId   = (string)ViewBag.RevieweeId;
+    var revieweeName = (string)ViewBag.RevieweeName;
+    var avatarUrl    = (string?)ViewBag.RevieweeAvatarUrl;
 }
 
 @section Styles {
@@ -58,7 +54,7 @@
 
         <div style="display:flex;gap:12px;margin-top:8px;">
             <button id="btn-submit-review" class="btn-save" disabled>Submit Review</button>
-            <a href="@profileUrl" class="btn-cancel-edit">Cancel</a>
+            <a href="/Profile/Index?userId=@revieweeId" class="btn-cancel-edit">Cancel</a>
         </div>
 
         <p id="review-feedback" style="margin-top:12px;font-size:0.9rem;"></p>
@@ -68,9 +64,8 @@
 @section Scripts {
 <script>
 (function () {
-    var revieweeId       = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeId)';
-    var revieweeName     = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeName ?? string.Empty)';
-    var profileUrl       = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(profileUrl)';
+    var revieweeId   = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeId)';
+    var revieweeName = '@System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(revieweeName ?? string.Empty)';
 
     var stars     = document.querySelectorAll('.star-pick');
     var label     = document.getElementById('star-label');
@@ -137,7 +132,7 @@
                 feedback.textContent = '✓ Review submitted successfully!';
                 submitBtn.textContent = 'Submitted';
                 setTimeout(function () {
-                    window.location.href = profileUrl;
+                    window.location.href = '/Profile/Index?userId=' + revieweeId;
                 }, 1500);
             } else {
                 feedback.style.color = '#dc2626';

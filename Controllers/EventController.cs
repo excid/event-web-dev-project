@@ -29,16 +29,6 @@ public class EventController : Controller
         if (post.OwnerId == currentUserId)
             return RedirectToAction("Index", "ActivityPost", new { id = post.Id });
 
-        // Pass owner's username slug for profile link
-        if (post.OwnerId != null)
-        {
-            var ownerUsername = await _db.Users
-                .Where(u => u.Id == post.OwnerId)
-                .Select(u => u.ProfileSlug)
-                .FirstOrDefaultAsync();
-            ViewBag.OwnerUsername = ownerUsername;
-        }
-
         return View(post);
     }
 
@@ -87,48 +77,8 @@ public class EventController : Controller
 
         _db.PostApplications.Add(application);
 
-    if (instantlyAccepted)
-    {
-        post.CurrentMembers++;
-
-        if (post.CurrentMembers >= post.MaxMembers)
-        {
-            post.Status = "Closed";
-
-            // 🔔 Notify the post OWNER that the activity is full and auto-closed
-            if (post.OwnerId != null)
-            {
-                _db.Notifications.Add(new Notification
-                {
-                    UserId    = post.OwnerId,
-                    Type      = "PostFull",
-                    Title     = "Activity is Now Full",
-                    Message   = $"Your post \"{post.Title}\" has reached its member limit and has been automatically closed.",
-                    ActionUrl = $"/ActivityPost/Index/{post.Id}",
-                    CreatedAt = DateTime.Now
-                });
-            }
-
-            // 🔔 Notify ALL accepted members that the activity is now full
-            var acceptedApplicantIds = await _db.PostApplications
-                .Where(a => a.PostId == post.Id && a.Status == "Accepted" && a.ApplicantId != null)
-                .Select(a => a.ApplicantId!)
-                .ToListAsync();
-
-            foreach (var memberId in acceptedApplicantIds)
-            {
-                _db.Notifications.Add(new Notification
-                {
-                    UserId    = memberId,
-                    Type      = "PostFull",
-                    Title     = "Activity is Now Full",
-                    Message   = $"\"{post.Title}\" has reached its member limit. See you there!",
-                    ActionUrl = $"/Event/Join/{post.Id}",
-                    CreatedAt = DateTime.Now
-                });
-            }
-        }
-    }
+        if (instantlyAccepted)
+            post.CurrentMembers++;
 
         // Notify the post owner
         if (post.OwnerId != null && post.OwnerId != userId)

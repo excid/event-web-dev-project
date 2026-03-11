@@ -283,9 +283,6 @@ namespace event_web_dev_project.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ProfileSlug")
-                        .HasColumnType("text");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -307,9 +304,6 @@ namespace event_web_dev_project.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
-
-                    b.HasIndex("ProfileSlug")
-                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });

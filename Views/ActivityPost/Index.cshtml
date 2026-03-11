@@ -33,7 +33,7 @@ else
             <h1 class="event-title">@Model.Title</h1>
 
             <p class="event-posted-by">
-                Posted by <a href="@(ViewBag.OwnerUsername != null ? Url.Action("Index", "Profile", new { username = (string)ViewBag.OwnerUsername }) : Url.Action("Index", "Profile"))">@Model.PostedBy</a>
+                Posted by <a href="@(Model.OwnerId != null ? Url.Action("Index", "Profile", new { userId = Model.OwnerId }) : "#")">@Model.PostedBy</a>
                 &bull; @Model.PostedAt.ToString("MMM d, yyyy")
             </p>
 

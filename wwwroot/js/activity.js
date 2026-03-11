@@ -21,7 +21,7 @@
             title: data.title,
             poster: {
                 name: data.postedBy,
-                href: data.ownerUsername ? '/Profile/Index?username=' + encodeURIComponent(data.ownerUsername) : '#'
+                href: data.postedByUsername ? '/Profile/View/' + data.postedByUsername : '#'
             },
             postedAt: data.postedAt,
             description: data.description,
