@@ -21,18 +21,18 @@ public class ProfileController : Controller
     }
 
     // GET /Profile/Index
-    // GET /Profile/Index?userId=<id>  — view another user's profile (read-only)
+    // GET /Profile/Index?username=<username>  — view another user's profile (read-only)
     [Authorize]
-    public async Task<IActionResult> Index(string? userId)
+    public async Task<IActionResult> Index(string? username)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         ApplicationUser? user;
         bool isOwner;
 
-        if (string.IsNullOrEmpty(userId) || userId == currentUserId)
+        if (string.IsNullOrEmpty(username))
         {
-            // Viewing own profile
+            // Viewing own profile (no parameter)
             user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -43,10 +43,10 @@ public class ProfileController : Controller
         }
         else
         {
-            // Viewing someone else's profile
-            user = await _userManager.FindByIdAsync(userId);
+            // Viewing a profile by username slug
+            user = await _context.Users.FirstOrDefaultAsync(u => u.ProfileSlug == username);
             if (user == null) return NotFound();
-            isOwner = false;
+            isOwner = (user.Id == currentUserId);
         }
 
         var profileUserId = user.Id;
@@ -123,6 +123,7 @@ public class ProfileController : Controller
         var viewModel = new ProfileViewModel
         {
             UserId      = profileUserId,
+            Username    = user.ProfileSlug,
             DisplayName = user.DisplayName ?? user.UserName ?? "Unknown User",
             Email       = user.Email ?? "",
             About       = user.About,

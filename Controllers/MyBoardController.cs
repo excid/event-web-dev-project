@@ -90,26 +90,28 @@ public class MyBoardController : Controller
         {
             SentInvitations = sentInvitations.Select(i => new SentInvitationCardModel
             {
-                InvitationId    = i.Id,
-                Title           = i.Post?.Title ?? "Unknown Event",
-                Status          = i.Status,
-                Receiver        = i.Receiver?.DisplayName ?? i.Receiver?.UserName ?? "Unknown",
-                ReceiverUserId  = i.ReceiverId,
-                SentDate        = i.SentAt,
-                EventDate       = (i.Post != null && i.Post.ActivityDate != default) ? i.Post.ActivityDate : (i.Post?.ExpiresAt ?? i.SentAt),
-                Message         = i.Message,
+                InvitationId     = i.Id,
+                Title            = i.Post?.Title ?? "Unknown Event",
+                Status           = i.Status,
+                Receiver         = i.Receiver?.DisplayName ?? i.Receiver?.UserName ?? "Unknown",
+                ReceiverUserId   = i.ReceiverId,
+                ReceiverUsername = i.Receiver?.ProfileSlug,
+                SentDate         = i.SentAt,
+                EventDate        = (i.Post != null && i.Post.ActivityDate != default) ? i.Post.ActivityDate : (i.Post?.ExpiresAt ?? i.SentAt),
+                Message          = i.Message,
             }).ToList(),
 
             ReceivedInvitations = receivedInvitations.Select(i => new ReceivedInvitationCardModel
             {
-                InvitationId  = i.Id,
-                Title         = i.Post?.Title ?? "Unknown Event",
-                Status        = i.Status,
-                Sender        = i.Sender?.DisplayName ?? i.Sender?.UserName ?? "Unknown",
-                SenderUserId  = i.SenderId,
-                ReceivedDate  = i.SentAt,
-                EventDate     = (i.Post != null && i.Post.ActivityDate != default) ? i.Post.ActivityDate : (i.Post?.ExpiresAt ?? i.SentAt),
-                Message       = i.Message,
+                InvitationId   = i.Id,
+                Title          = i.Post?.Title ?? "Unknown Event",
+                Status         = i.Status,
+                Sender         = i.Sender?.DisplayName ?? i.Sender?.UserName ?? "Unknown",
+                SenderUserId   = i.SenderId,
+                SenderUsername = i.Sender?.ProfileSlug,
+                ReceivedDate   = i.SentAt,
+                EventDate      = (i.Post != null && i.Post.ActivityDate != default) ? i.Post.ActivityDate : (i.Post?.ExpiresAt ?? i.SentAt),
+                Message        = i.Message,
             }).ToList(),
         };
 

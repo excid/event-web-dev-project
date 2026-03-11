@@ -28,6 +28,16 @@ public class EventController : Controller
         if (post.OwnerId == currentUserId)
             return RedirectToAction("Index", "ActivityPost", new { id = post.Id });
 
+        // Pass owner's username slug for profile link
+        if (post.OwnerId != null)
+        {
+            var ownerUsername = await _db.Users
+                .Where(u => u.Id == post.OwnerId)
+                .Select(u => u.ProfileSlug)
+                .FirstOrDefaultAsync();
+            ViewBag.OwnerUsername = ownerUsername;
+        }
+
         return View(post);
     }
 

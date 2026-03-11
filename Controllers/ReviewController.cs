@@ -35,6 +35,7 @@ public class ReviewController : Controller
             return NotFound();
 
         ViewBag.RevieweeId   = revieweeId;
+        ViewBag.RevieweeUsername = reviewee.ProfileSlug;
         ViewBag.RevieweeName = reviewee.DisplayName ?? reviewee.UserName ?? "Unknown User";
         ViewBag.RevieweeAvatarUrl = reviewee.AvatarUrl;
         return View();

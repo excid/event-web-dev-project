@@ -6,6 +6,9 @@ public class ProfileViewModel
 {
     public string UserId { get; set; } = string.Empty;
 
+    /// <summary>URL-safe unique handle used in profile URLs (e.g. /Profile?username=jane_doe).</summary>
+    public string? Username { get; set; }
+
     [Required]
     [Display(Name = "Display Name")]
     public string DisplayName { get; set; } = string.Empty;

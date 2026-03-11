@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using event_web_dev_project.Models;
+using event_web_dev_project.Data;
+using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace event_web_dev_project.Controllers;
 
@@ -8,13 +11,16 @@ public class LoginController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext _context;
 
     public LoginController(
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        AppDbContext context)
     {
         _signInManager = signInManager;
         _userManager = userManager;
+        _context = context;
     }
 
     // ─── Login ───────────────────────────────────────────────────────────────
@@ -74,6 +80,7 @@ public class LoginController : Controller
             UserName    = model.Email,
             Email       = model.Email,
             DisplayName = model.DisplayName,
+            ProfileSlug = await GenerateUniqueProfileSlugAsync(model.DisplayName),
             CreatedAt   = DateTime.Now
         };
 
@@ -102,5 +109,25 @@ public class LoginController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Login");
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Converts a display name to a URL-safe slug and ensures it is unique
+    /// across all existing profile slugs.
+    /// </summary>
+    private async Task<string> GenerateUniqueProfileSlugAsync(string displayName)
+    {
+        // Lowercase, replace spaces/special chars with underscores, collapse duplicates
+        var baseSlug = Regex.Replace(displayName.ToLowerInvariant(), @"[^a-z0-9]+", "_").Trim('_');
+        if (string.IsNullOrEmpty(baseSlug)) baseSlug = "user";
+
+        var slug = baseSlug;
+        int suffix = 1;
+        while (await _context.Users.AnyAsync(u => u.ProfileSlug == slug))
+            slug = baseSlug + suffix++;
+
+        return slug;
     }
 }
