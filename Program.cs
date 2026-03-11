@@ -60,20 +60,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var adminEmail = "sarah@example.com";
     var user = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
-    if (user == null)
-    {
-        user = new ApplicationUser
-        {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true,
-            DisplayName = "Sarah Chen",
-            About = "Software Engineer and Football enthusiast. Love organizing local sports events!",
-            Tags = "Software,Sports,Organizer",
-            Interests = "Sports,Dining"
-        };
-        userManager.CreateAsync(user, "Sarah@123").GetAwaiter().GetResult();
-    }
+   
 }
 
 var cultureInfo = new CultureInfo("en-US");
