@@ -25,9 +25,8 @@ public class MyBoardController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         // ── Tab 1: My Posts ───────────────────────────────────────────────
-        // Posts where the logged-in user is the owner
         var myPosts = await _db.ActivityPosts
-            .Where(p => p.OwnerId == userId && p.Status != "Closed")
+            .Where(p => p.OwnerId == userId && !p.IsDeleted)
             .Include(p => p.Applications)
             .OrderByDescending(p => p.PostedAt)
             .ToListAsync();
