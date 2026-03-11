@@ -94,9 +94,8 @@ public class EventController : Controller
         if (post.CurrentMembers >= post.MaxMembers)
         {
             post.Status = "Closed";
-            post.IsDeleted = true; // Soft delete the post when it's closed
+            post.IsDeleted = true; 
 
-            // 🔔 Notify the post OWNER that the activity is full and auto-closed
             if (post.OwnerId != null)
             {
                 _db.Notifications.Add(new Notification
@@ -110,7 +109,6 @@ public class EventController : Controller
                 });
             }
 
-            // 🔔 Notify ALL accepted members that the activity is now full
             var acceptedApplicantIds = await _db.PostApplications
                 .Where(a => a.PostId == post.Id && a.Status == "Accepted" && a.ApplicantId != null)
                 .Select(a => a.ApplicantId!)
@@ -131,7 +129,6 @@ public class EventController : Controller
         }
     }
 
-        // Notify the post owner
         if (post.OwnerId != null && post.OwnerId != userId)
         {
             _db.Notifications.Add(new Notification
@@ -147,7 +144,6 @@ public class EventController : Controller
             });
         }
 
-        // If instantly accepted, notify the applicant
         if (instantlyAccepted && userId != null)
         {
             _db.Notifications.Add(new Notification

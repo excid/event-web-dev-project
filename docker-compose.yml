@@ -24,8 +24,8 @@ services:
       - "8080:8080"
     volumes:
       - .:/src
-      - app_obj:/src/obj    # ← named, gets reused
-      - app_bin:/src/bin    # ← named, gets reused
+      - app_obj:/src/obj
+      - app_bin:/src/bin
       - app_keys:/src/DataProtection-Keys
     environment:
       TZ: Asia/Bangkok
@@ -36,8 +36,19 @@ services:
       db:
         condition: service_healthy
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: eventboard-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
 volumes:
   pgdata:
-  app_obj:    # ← add these two
+  app_obj:
   app_bin:
   app_keys:

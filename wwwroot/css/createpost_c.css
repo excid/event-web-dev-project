@@ -163,15 +163,13 @@ button:hover {
     text-align: center;
 }
 
-/* คลาสสำหรับช่องที่กรอกข้อมูลไม่ถูกต้องหรือว่างเปล่า */
 .input-error {
-    border: 2px solid #ff4d4d !important; /* เปลี่ยนขอบเป็นสีแดง */
-    outline: none; /* ลบเส้นขอบสีน้ำเงินเริ่มต้นออก */
+    border: 2px solid #ff4d4d !important; 
+    outline: none; 
     transition: all 0.2s ease-in-out;
     position: relative;
 }
 
-/* เอฟเฟกต์สั่นเบาๆ เมื่อเพิ่มคลาสนี้เข้าไป (ดึงดูดสายตา) */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-6px); }
@@ -179,7 +177,7 @@ button:hover {
 }
 
 .input-error {
-    animation: shake 0.2s ease-in-out 0s 2; /* สั่น 2 ครั้ง */
+    animation: shake 0.2s ease-in-out 0s 2; 
 }
 
 .input-group:has(.input-error) label {
