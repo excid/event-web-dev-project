@@ -23,14 +23,14 @@ public class ProfileController : Controller
     // GET /Profile/Index
     // GET /Profile/Index?userId=<id>  — view another user's profile (read-only)
     [Authorize]
-    public async Task<IActionResult> Index(string? username)
+    public async Task<IActionResult> Index(string? userId)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         ApplicationUser? user;
         bool isOwner;
 
-        if (string.IsNullOrEmpty(username) || username == currentUserId)
+        if (string.IsNullOrEmpty(userId) || userId == currentUserId)
         {
             // Viewing own profile
             user = await _userManager.GetUserAsync(User);
@@ -44,7 +44,7 @@ public class ProfileController : Controller
         else
         {
             // Viewing someone else's profile
-            user = await _userManager.FindByIdAsync(username);
+            user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
             isOwner = false;
         }
