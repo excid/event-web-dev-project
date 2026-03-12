@@ -62,6 +62,9 @@ public class ReviewController : Controller
             if (post == null)
                 return Json(new { success = false, error = "Post not found" });
 
+            if (post.ActivityDate > DateTime.Now)
+                return Json(new { success = false, error = "Reviews are only available after the activity has taken place." });
+
             // Prevent duplicate reviews for the same reviewee on the same post
             var existing = await _db.Reviews.AnyAsync(r =>
                 r.PostId == resolvedPostId &&

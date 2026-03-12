@@ -57,7 +57,9 @@ public class CalendarController : Controller
                 Category = post.Category,
                 Status = post.Status,
                 SourceType = "Post",
-                Author = post.PostedBy ?? "You"
+                Author = post.PostedBy ?? "You",
+                MembersJoined = post.CurrentMembers,
+                MembersTotal = post.MaxMembers
             });
         }
 
@@ -78,7 +80,9 @@ public class CalendarController : Controller
                 Category = app.ActivityPost?.Category,
                 Status = app.Status,
                 SourceType = "Application",
-                Author = app.ActivityPost?.PostedBy ?? "Unknown"
+                Author = app.ActivityPost?.PostedBy ?? "Unknown",
+                MembersJoined = app.ActivityPost?.CurrentMembers ?? 0,
+                MembersTotal = app.ActivityPost?.MaxMembers ?? 0
             });
         }
 

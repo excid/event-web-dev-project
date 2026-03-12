@@ -419,7 +419,6 @@
         const text = input.value.trim();
         const now = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 
-        // Add to mock data
         const app = APPLICATIONS.find(function (a) { return a.id === openChatId; });
         if (app) {
             app.chatMessages.push({ side: 'right', text: text, time: now });

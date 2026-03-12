@@ -16,9 +16,6 @@
     const hiddenInterests = document.getElementById('hidden-interests');
     const hiddenAvatarUrl = document.getElementById('hidden-avatar-url');
 
-    // View Elements (these are now assumed to be rendered by the server based on current profile data)
-    // No longer directly manipulated by JS for rendering view mode.
-
     // Edit Elements
     const editTagList = document.getElementById('edit-tag-list');
     const inputNewTag = document.getElementById('input-new-tag');
@@ -72,7 +69,6 @@
     }
 
     // --- Rendering ---
-    // renderView() is removed as view mode is assumed to be server-rendered.
 
     function renderEditTags() {
         editTagList.innerHTML = tempTags.map((tag, index) => `
@@ -116,8 +112,6 @@
         if (hiddenInterests) hiddenInterests.value = tempInterests.join(',');
     }
 
-    // handleSave() is removed as form submission handles saving.
-
     function addTag() {
         const tag = inputNewTag.value.trim();
         if (tag && !tempTags.includes(tag)) {
@@ -155,8 +149,6 @@
             init();
             toggleEditMode(false);
         });
-        // The save button is now assumed to be a submit button for the form.
-        // document.getElementById('btn-edit-save').addEventListener('click', handleSave);
 
         // Tag management
         document.getElementById('btn-add-tag').addEventListener('click', addTag);
@@ -188,8 +180,6 @@
                     reader.onload = function (e) {
                         avatarPreview.src = e.target.result;
                         avatarPreview.style.display = 'block';
-                        // In this mock-to-real hybrid, we store the base64 in the hidden field
-                        // In a production app, you'd upload the file and store the URL.
                         if (hiddenAvatarUrl) hiddenAvatarUrl.value = e.target.result;
                     }
                     reader.readAsDataURL(this.files[0]);
@@ -197,7 +187,5 @@
             });
         }
     }
-
-    // showToast() is removed as it's no longer part of this module's responsibility.
 
 })();
